@@ -1,24 +1,32 @@
 const nodemailer = require("nodemailer");
 
 const sendMail = async (options) => {
+  try {
+    // Hardcoded configuration for testing purposes
     const transporter = nodemailer.createTransport({
-        host: process.env.SMPT_HOST,
-        port: process.env.SMPT_PORT,
-        service: process.env.SMPT_SERVICE,
-        auth:{
-            user: process.env.SMPT_MAIL,
-            pass: process.env.SMPT_PASSWORD,
-        },
+      service: 'gmail',
+      auth: {
+        user: 'euginekoyo003@gmail.com',
+        pass: 'sbga zdsz uvtn mjqe',
+      },
+      debug: true, // Enable debug output
     });
 
     const mailOptions = {
-        from: process.env.SMPT_MAIL,
-        to: options.email,
-        subject: options.subject,
-        text: options.message,
+      from: 'euginekoyo003@gmail.com',
+      to: options.email,
+      subject: options.subject,
+      text: options.message,
     };
 
-    await transporter.sendMail(mailOptions);
+    console.log(`Attempting to send email to: ${options.email}`);
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`Email sent successfully: ${info.messageId}`);
+    return info;
+  } catch (error) {
+    console.error("Error in sendMail function:", error);
+    throw error;
+  }
 };
 
 module.exports = sendMail;

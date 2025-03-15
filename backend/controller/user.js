@@ -12,16 +12,21 @@ const { isAuthenticated, isAdmin } = require("../middleware/auth");
 // create user
 router.post("/create-user", async (req, res, next) => {
   try {
+    console.log("Starting user creation process");
     const { name, email, password, avatar } = req.body;
-    const userEmail = await User.findOne({ email });
+    console.log(`Received request for email: ${email}`);
 
+    const userEmail = await User.findOne({ email });
     if (userEmail) {
       return next(new ErrorHandler("User already exists", 400));
     }
 
+    console.log("Attempting to upload to Cloudinary");
     const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+      
       folder: "avatars",
     });
+    console.log("Cloudinary upload successful");
 
     const user = {
       name: name,
@@ -33,24 +38,30 @@ router.post("/create-user", async (req, res, next) => {
       },
     };
 
+    console.log("Creating activation token");
     const activationToken = createActivationToken(user);
 
-    const activationUrl = `https://eshop-tutorial-pyri.vercel.app/activation/${activationToken}`;
+    const activationUrl = `http://localhost:3000/activation/${activationToken}`;
 
+    console.log("Sending activation email");
     try {
       await sendMail({
         email: user.email,
         subject: "Activate your account",
         message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
       });
+      console.log("Email sent successfully");
+
       res.status(201).json({
         success: true,
         message: `please check your email:- ${user.email} to activate your account!`,
       });
     } catch (error) {
+      console.error("Email sending failed:", error);
       return next(new ErrorHandler(error.message, 500));
     }
   } catch (error) {
+    console.error("User creation failed:", error);
     return next(new ErrorHandler(error.message, 400));
   }
 });
