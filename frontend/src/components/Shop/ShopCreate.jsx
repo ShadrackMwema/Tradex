@@ -6,7 +6,6 @@ import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
 import { RxAvatar } from "react-icons/rx";
-
 const ShopCreate = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -16,7 +15,7 @@ const ShopCreate = () => {
   const [avatar, setAvatar] = useState();
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
-
+const navigate=useNavigate()
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -32,6 +31,7 @@ const ShopCreate = () => {
       })
       .then((res) => {
         toast.success(res.data.message);
+        navigate("/verificationForm")
         setName("");
         setEmail("");
         setPassword("");

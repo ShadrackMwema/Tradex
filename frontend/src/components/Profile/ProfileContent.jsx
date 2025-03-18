@@ -23,6 +23,8 @@ import { useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { getAllOrdersOfUser } from "../../redux/actions/order";
+import SellerApplicationForm from "../Shop/verificationForm";
+import SellerApplicationStatus from "./status";
 
 const ProfileContent = ({ active }) => {
   const { user, error, successMessage } = useSelector((state) => state.user);
@@ -79,6 +81,7 @@ const ProfileContent = ({ active }) => {
   return (
     <div className="w-full">
       {/* profile */}
+      <SellerApplicationStatus/>
       {active === 1 && (
         <>
           <div className="flex justify-center w-full">
