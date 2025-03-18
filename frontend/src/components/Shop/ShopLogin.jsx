@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -10,11 +10,21 @@ const ShopLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
-  const [loading, setLoading] = useState(false); // Loader state
+  const [loading, setLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // Check if user is already authenticated
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsAuthenticated(true);
+      navigate("/dashboard");
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Start loading
+    setLoading(true);
 
     try {
       const res = await axios.post(
@@ -23,16 +33,24 @@ const ShopLogin = () => {
         { withCredentials: true }
       );
 
+      const token = res.data.token;
+      localStorage.setItem("token", token); // Save token
+      setIsAuthenticated(true); // Update state
+
       toast.success("Login Success!");
-      console.log(res.data);
-      navigate("/dashboard");
-      
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed!");
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
+
+  // Redirect when authentication state updates
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
