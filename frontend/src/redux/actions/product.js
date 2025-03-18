@@ -92,7 +92,6 @@ export const deleteProduct = (id) => async (dispatch) => {
   }
 };
 
-// get all products
 export const getAllProducts = () => async (dispatch) => {
   try {
     dispatch({
@@ -102,7 +101,10 @@ export const getAllProducts = () => async (dispatch) => {
     const { data } = await axios.get(`${server}/product/get-all-products`);
     dispatch({
       type: "getAllProductsSuccess",
-      payload: data.products,
+      payload: {
+        products: data.products,
+        locations: data.locations
+      },
     });
   } catch (error) {
     dispatch({

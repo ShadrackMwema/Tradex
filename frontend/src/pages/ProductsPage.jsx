@@ -1,34 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import Footer from "../components/Layout/Footer";
 import Header from "../components/Layout/Header";
 import Loader from "../components/Layout/Loader";
 import ProductCard from "../components/Route/ProductCard/ProductCard";
 import BottomTaskbar from "../components/Layout/BottomTaskbar";
+import LocationFilter from "../components/Layout/LocationFilter"; // Import the LocationFilter component
+import { getAllProducts } from "../redux/actions/product"; // Import the action
 
 const ProductsPage = () => {
+  const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const categoryData = searchParams.get("category");
-  const { allProducts, isLoading } = useSelector((state) => state.products);
+  const { allProducts, locations, isLoading } = useSelector((state) => state.products);
   const [data, setData] = useState([]);
-  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("All Locations");
 
-  // List of locations (ensure these match the sellerLocation values in the database)
-  const locations = [
-    "All Locations",
-    "nairobi",
-    "kisumu",
-    "mombasa",
-    "nakuru",
-    "eldoret",
-  ];
-
+  // Fetch products on component mount
   useEffect(() => {
-    console.log("All Products:", allProducts); // Log all products
-    console.log("Selected Location:", selectedLocation); // Log selected location
+    dispatch(getAllProducts());
+  }, [dispatch]);
 
-    let filteredProducts = allProducts;
+  // Filter products based on the selected location and category
+  useEffect(() => {
+    let filteredProducts = allProducts || [];
 
     // Filter by category
     if (categoryData) {
@@ -39,17 +35,21 @@ const ProductsPage = () => {
 
     // Filter by location (case-insensitive)
     if (selectedLocation && selectedLocation !== "All Locations") {
-      filteredProducts = filteredProducts.filter(
-        (i) => i.sellerLocation.toLowerCase() === selectedLocation.toLowerCase()
-      );
+      filteredProducts = filteredProducts.filter((i) => {
+        if (!i.sellerLocation) {
+          console.warn(`Product ${i.name} has no sellerLocation`);
+          return false;
+        }
+        return i.sellerLocation.toLowerCase() === selectedLocation.toLowerCase();
+      });
     }
 
-    console.log("Filtered Products:", filteredProducts); // Log filtered products
     setData(filteredProducts);
   }, [allProducts, categoryData, selectedLocation]);
 
-  const handleLocationChange = (e) => {
-    setSelectedLocation(e.target.value);
+  const handleLocationChange = (location) => {
+    setSelectedLocation(location);
+    console.log("Selected Location Updated:", location);
   };
 
   return (
@@ -61,23 +61,13 @@ const ProductsPage = () => {
           <Header activeHeading={3} />
           <main className="flex-grow p-4 sm:p-6 md:p-8">
             <div className="max-w-7xl mx-auto">
-              {/* Location Filter */}
+              {/* Location Filter Component */}
               <div className="mb-6">
-                <label htmlFor="location" className="font-medium text-gray-700">
-                  Location:
-                </label>
-                <select
-                  id="location"
-                  value={selectedLocation}
-                  onChange={handleLocationChange}
-                  className="ml-2 p-2 border border-gray-300 rounded-md"
-                >
-                  {locations.map((location) => (
-                    <option key={location} value={location}>
-                      {location}
-                    </option>
-                  ))}
-                </select>
+                <LocationFilter
+                  selectedLocation={selectedLocation}
+                  onLocationChange={handleLocationChange}
+                  locations={locations || ["All Locations"]}
+                />
               </div>
 
               {/* Product Grid */}
