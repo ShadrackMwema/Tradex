@@ -1,16 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { brandingData, categoriesData } from "../../../static/data";
 import styles from "../../../styles/styles";
 
 const Categories = () => {
   const navigate = useNavigate();
+  const [showAll, setShowAll] = useState(false); // State to toggle "See All"
+
+  // Number of categories to show initially
+  const initialCategoriesToShow = 8;
+  const categoriesToDisplay = showAll
+    ? categoriesData
+    : categoriesData.slice(0, initialCategoriesToShow);
+
   return (
     <>
+      {/* Branding Section (Hidden on Mobile) */}
       <div className={`${styles.section} hidden sm:block`}>
-        <div
-          className={`branding my-12 flex justify-between w-full shadow-sm bg-white p-5 rounded-md`}
-        >
+        <div className="branding my-12 flex justify-between w-full shadow-sm bg-white p-5 rounded-md">
           {brandingData &&
             brandingData.map((i, index) => (
               <div className="flex items-start" key={index}>
@@ -24,31 +31,64 @@ const Categories = () => {
         </div>
       </div>
 
-      <div
-        className={`${styles.section} bg-white p-6 rounded-lg mb-12`}
-        id="categories"
-      >
-        <div className="grid grid-cols-1 gap-[5px] md:grid-cols-2 md:gap-[10px] lg:grid-cols-4 lg:gap-[20px] xl:grid-cols-5 xl:gap-[30px]">
-          {categoriesData &&
-            categoriesData.map((i) => {
-              const handleSubmit = (i) => {
-                navigate(`/products?category=${i.title}`);
-              };
-              return (
-                <div
-                  className="w-full h-[100px] flex items-center justify-between cursor-pointer overflow-hidden"
-                  key={i.id}
-                  onClick={() => handleSubmit(i)}
-                >
-                  <h5 className={`text-[18px] leading-[1.3]`}>{i.title}</h5>
-                  <img
-                    src={i.image_Url}
-                    className="w-[120px] object-cover"
-                    alt=""
-                  />
-                </div>
-              );
-            })}
+      {/* Categories Section */}
+      <div className={`${styles.section} bg-white p-4 rounded-lg mb-12`}>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-bold">Shop by Category</h2>
+          {!showAll && categoriesData.length > initialCategoriesToShow && (
+            <button
+              className="text-sm text-blue-600 hover:underline"
+              onClick={() => setShowAll(true)}
+            >
+              See All
+            </button>
+          )}
+        </div>
+
+        {/* Mobile: Horizontal Scrollable Layout */}
+        <div className="sm:hidden flex overflow-x-scroll hide-scrollbar gap-3 pb-4">
+          {categoriesToDisplay.map((i) => {
+            const handleSubmit = (i) => {
+              navigate(`/products?category=${i.title}`);
+            };
+            return (
+              <div
+                className="flex flex-col items-center justify-center p-2 border rounded-lg cursor-pointer hover:shadow-md transition-shadow min-w-[80px]"
+                key={i.id}
+                onClick={() => handleSubmit(i)}
+              >
+                <img
+                  src={i.image_Url}
+                  className="w-8 h-8 object-cover mb-1"
+                  alt={i.title}
+                />
+                <h5 className="text-xs text-center font-medium">{i.title}</h5>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Desktop: Grid Layout */}
+        <div className="hidden sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          {categoriesToDisplay.map((i) => {
+            const handleSubmit = (i) => {
+              navigate(`/products?category=${i.title}`);
+            };
+            return (
+              <div
+                className="flex flex-col items-center justify-center p-3 border rounded-lg cursor-pointer hover:shadow-md transition-shadow"
+                key={i.id}
+                onClick={() => handleSubmit(i)}
+              >
+                <img
+                  src={i.image_Url}
+                  className="w-12 h-12 object-cover mb-2"
+                  alt={i.title}
+                />
+                <h5 className="text-sm text-center font-medium">{i.title}</h5>
+              </div>
+            );
+          })}
         </div>
       </div>
     </>

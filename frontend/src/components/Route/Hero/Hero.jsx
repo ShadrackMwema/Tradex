@@ -5,30 +5,33 @@ import styles from "../../../styles/styles";
 const Hero = () => {
   return (
     <div
-      className={`relative min-h-[70vh] 800px:min-h-[80vh] w-full bg-no-repeat ${styles.noramlFlex}`}
+      className={`relative min-h-[25vh] 800px:min-h-[70vh] w-full bg-no-repeat bg-cover bg-center ${styles.noramlFlex} rounded-lg overflow-hidden`}
       style={{
         backgroundImage:
           "url(https://themes.rslahmed.dev/rafcart/assets/images/banner-2.jpg)",
       }}
     >
-      <div className={`${styles.section} w-[90%] 800px:w-[60%]`}>
+      {/* Background Overlay */}
+      <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+
+      {/* Content */}
+      <div className={`${styles.section} w-[90%] 800px:w-[60%] relative z-10`}>
         <h1
-          className={`text-[35px] leading-[1.2] 800px:text-[60px] text-[#3d3a3a] font-[600] capitalize`}
+          className={`text-[20px] leading-[1.2] 800px:text-[40px] text-white font-[600] capitalize`}
         >
-          Best Collection for <br /> home Decoration
+          Market Your Services Today
         </h1>
-        <p className="pt-5 text-[16px] font-[Poppins] font-[400] text-[#000000ba]">
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Beatae,
-          assumenda? Quisquam itaque <br /> exercitationem labore vel, dolore
-          quidem asperiores, laudantium temporibus soluta optio consequatur{" "}
-          <br /> aliquam deserunt officia. Dolorum saepe nulla provident.
+        <p className="pt-2 text-[12px] 800px:text-[16px] font-[Poppins] font-[400] text-white">
+          Reach more customers and grow your business with us.
         </p>
         <Link to="/products" className="inline-block">
-            <div className={`${styles.button} mt-5`}>
-                 <span className="text-[#fff] font-[Poppins] text-[18px]">
-                    Shop Now
-                 </span>
-            </div>
+          <div
+            className={`${styles.button} mt-3 800px:mt-5 bg-green-600 hover:bg-green-700 transition-colors rounded-sm 800px:rounded-md`}
+          >
+            <span className="text-[#fff] font-[Poppins] text-[14px] 800px:text-[18px]">
+              Shop Now
+            </span>
+          </div>
         </Link>
       </div>
     </div>

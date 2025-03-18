@@ -37,6 +37,7 @@ const Singup = () => {
         setEmail("");
         setPassword("");
         setAvatar();
+        console.log(res.data.message);
       })
       .catch((error) => {
         toast.error(error.response.data.message);
