@@ -63,6 +63,14 @@ router.get(
     try {
       const { location } = req.query; // Get location from query params
 
+      // Get all unique seller locations for the dropdown
+      const allLocations = await Product.distinct("sellerLocation");
+      console.log("Raw locations from DB:", allLocations);
+      
+      const validLocations = allLocations.filter(loc => loc !== null && loc !== undefined);
+      console.log("Valid locations after filtering:", validLocations);
+      
+      // Query products based on location filter
       let products;
       if (location && location !== "All Locations") {
         products = await Product.find({ sellerLocation: location }).sort({
@@ -71,13 +79,22 @@ router.get(
       } else {
         products = await Product.find().sort({ createdAt: -1 });
       }
+      
+      console.log("Number of products found:", products.length);
+      // Log a sample of sellerLocation values from the first few products
+      if (products.length > 0) {
+        console.log("Sample sellerLocation values:", 
+          products.slice(0, Math.min(5, products.length)).map(p => p.sellerLocation));
+      }
 
-      res.status(201).json({
+      res.status(200).json({
         success: true,
         products,
+        locations: ["All Locations", ...validLocations]
       });
     } catch (error) {
-      return next(new ErrorHandler(error, 400));
+      console.error("Error in get-all-products:", error);
+      return next(new ErrorHandler(error.message, 400));
     }
   })
 );
@@ -111,23 +128,38 @@ router.delete(
   })
 );
 
-// get all products
+
+// get all products with filtering and location options
 router.get(
   "/get-all-products",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const products = await Product.find().sort({ createdAt: -1 });
+      const { location } = req.query; // Get location from query params
 
-      res.status(201).json({
+      // Get all unique seller locations for the dropdown
+      const allLocations = await Product.distinct("sellerLocation");
+      const validLocations = allLocations.filter(loc => loc !== null && loc !== undefined);
+      
+      // Query products based on location filter
+      let products;
+      if (location && location !== "All Locations") {
+        products = await Product.find({ sellerLocation: location }).sort({
+          createdAt: -1,
+        });
+      } else {
+        products = await Product.find().sort({ createdAt: -1 });
+      }
+
+      res.status(200).json({
         success: true,
         products,
+        locations: ["All Locations", ...validLocations]
       });
     } catch (error) {
-      return next(new ErrorHandler(error, 400));
+      return next(new ErrorHandler(error.message, 400));
     }
   })
 );
-
 // review for a product
 router.put(
   "/create-new-review",
@@ -204,4 +236,6 @@ router.get(
     }
   })
 );
+
+
 module.exports = router;
