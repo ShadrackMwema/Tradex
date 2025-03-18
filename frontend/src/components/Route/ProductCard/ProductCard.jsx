@@ -1,26 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   AiFillHeart,
-  AiFillStar,
   AiOutlineEye,
   AiOutlineHeart,
   AiOutlineShoppingCart,
-  AiOutlineStar,
 } from "react-icons/ai";
 import { Link } from "react-router-dom";
-import styles from "../../../styles/styles";
 import { useDispatch, useSelector } from "react-redux";
 import ProductDetailsCard from "../ProductDetailsCard/ProductDetailsCard";
 import {
   addToWishlist,
   removeFromWishlist,
 } from "../../../redux/actions/wishlist";
-import { useEffect } from "react";
 import { addTocart } from "../../../redux/actions/cart";
 import { toast } from "react-toastify";
 import Ratings from "../../Products/Ratings";
 
-const ProductCard = ({ data,isEvent }) => {
+const ProductCard = ({ data, isEvent }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
   const { cart } = useSelector((state) => state.cart);
   const [click, setClick] = useState(false);
@@ -61,83 +57,92 @@ const ProductCard = ({ data,isEvent }) => {
   };
 
   return (
-    <>
-      <div className="w-full h-[370px] bg-white rounded-lg shadow-sm p-3 relative cursor-pointer">
-        <div className="flex justify-end"></div>
-        <Link to={`${isEvent === true ? `/product/${data._id}?isEvent=true` : `/product/${data._id}`}`}>
-          <img
-            src={`${data.images && data.images[0]?.url}`}
-            alt=""
-            className="w-full h-[170px] object-contain"
-          />
-        </Link>
-        <Link to={`/shop/preview/${data?.shop._id}`}>
-          <h5 className={`${styles.shop_name}`}>{data.shop.name}</h5>
-        </Link>
-        <Link to={`${isEvent === true ? `/product/${data._id}?isEvent=true` : `/product/${data._id}`}`}>
-          <h4 className="pb-3 font-[500]">
-            {data.name.length > 40 ? data.name.slice(0, 40) + "..." : data.name}
-          </h4>
-
-          <div className="flex">
-          <Ratings rating={data?.ratings} />
-          </div>
-
-          <div className="py-2 flex items-center justify-between">
-            <div className="flex">
-              <h5 className={`${styles.productDiscountPrice}`}>
-                {data.originalPrice === 0
-                  ? data.originalPrice
-                  : data.discountPrice}
-                $
-              </h5>
-              <h4 className={`${styles.price}`}>
-                {data.originalPrice ? data.originalPrice + " $" : null}
-              </h4>
-            </div>
-            <span className="font-[400] text-[17px] text-[#68d284]">
-              {data?.sold_out} sold
-            </span>
-          </div>
-        </Link>
-
-        {/* side options */}
-        <div>
-          {click ? (
-            <AiFillHeart
-              size={22}
-              className="cursor-pointer absolute right-2 top-5"
-              onClick={() => removeFromWishlistHandler(data)}
-              color={click ? "red" : "#333"}
-              title="Remove from wishlist"
-            />
-          ) : (
-            <AiOutlineHeart
-              size={22}
-              className="cursor-pointer absolute right-2 top-5"
-              onClick={() => addToWishlistHandler(data)}
-              color={click ? "red" : "#333"}
-              title="Add to wishlist"
-            />
-          )}
-          <AiOutlineEye
+    <div className="w-full bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 p-4 relative cursor-pointer">
+      {/* Wishlist Icon */}
+      <div className="absolute top-4 right-4 z-10">
+        {click ? (
+          <AiFillHeart
             size={22}
-            className="cursor-pointer absolute right-2 top-14"
-            onClick={() => setOpen(!open)}
-            color="#333"
-            title="Quick view"
+            className="cursor-pointer text-red-500"
+            onClick={() => removeFromWishlistHandler(data)}
+            title="Remove from wishlist"
           />
-          <AiOutlineShoppingCart
-            size={25}
-            className="cursor-pointer absolute right-2 top-24"
-            onClick={() => addToCartHandler(data._id)}
-            color="#444"
-            title="Add to cart"
+        ) : (
+          <AiOutlineHeart
+            size={22}
+            className="cursor-pointer text-gray-600 hover:text-red-500"
+            onClick={() => addToWishlistHandler(data)}
+            title="Add to wishlist"
           />
-          {open ? <ProductDetailsCard setOpen={setOpen} data={data} /> : null}
-        </div>
+        )}
       </div>
-    </>
+
+      {/* Product Image */}
+      <Link
+        to={`${isEvent ? `/product/${data._id}?isEvent=true` : `/product/${data._id}`}`}
+      >
+        <img
+          src={data.images && data.images[0]?.url}
+          alt={data.name}
+          className="w-full h-48 object-cover rounded-t-lg"
+        />
+      </Link>
+
+      {/* Shop Name */}
+      <Link to={`/shop/preview/${data?.shop._id}`}>
+        <h5 className="text-sm text-gray-600 mt-2 hover:text-blue-500">
+          {data.shop.name}
+        </h5>
+      </Link>
+
+      {/* Product Name */}
+      <Link
+        to={`${isEvent ? `/product/${data._id}?isEvent=true` : `/product/${data._id}`}`}
+      >
+        <h4 className="text-lg font-semibold text-gray-800 mt-2 hover:text-blue-500">
+          {data.name.length > 40 ? `${data.name.slice(0, 40)}...` : data.name}
+        </h4>
+      </Link>
+
+      {/* Ratings */}
+      <div className="mt-2">
+        <Ratings rating={data?.ratings} />
+      </div>
+
+      {/* Price and Sold Count */}
+      <div className="mt-2 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <h5 className="text-lg font-bold text-gray-900">
+            ${data.discountPrice || data.originalPrice}
+          </h5>
+          {data.originalPrice && (
+            <h4 className="text-sm text-gray-500 line-through">
+              ${data.originalPrice}
+            </h4>
+          )}
+        </div>
+        <span className="text-sm text-green-600">{data?.sold_out} sold</span>
+      </div>
+
+      {/* Quick View and Add to Cart Icons */}
+      <div className="absolute bottom-4 right-4 flex flex-col gap-3">
+        <AiOutlineEye
+          size={22}
+          className="cursor-pointer text-gray-600 hover:text-blue-500"
+          onClick={() => setOpen(!open)}
+          title="Quick view"
+        />
+        <AiOutlineShoppingCart
+          size={22}
+          className="cursor-pointer text-gray-600 hover:text-blue-500"
+          onClick={() => addToCartHandler(data._id)}
+          title="Add to cart"
+        />
+      </div>
+
+      {/* Product Details Modal */}
+      {open && <ProductDetailsCard setOpen={setOpen} data={data} />}
+    </div>
   );
 };
 

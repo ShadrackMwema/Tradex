@@ -25,23 +25,24 @@ router.post(
         } else {
           images = req.body.images;
         }
-      
+
         const imagesLinks = [];
-      
+
         for (let i = 0; i < images.length; i++) {
           const result = await cloudinary.v2.uploader.upload(images[i], {
             folder: "products",
           });
-      
+
           imagesLinks.push({
             public_id: result.public_id,
             url: result.secure_url,
           });
         }
-      
+
         const productData = req.body;
         productData.images = imagesLinks;
         productData.shop = shop;
+        productData.sellerLocation = shop.address; // Add seller's location
 
         const product = await Product.create(productData);
 
@@ -55,13 +56,21 @@ router.post(
     }
   })
 );
-
 // get all products of a shop
 router.get(
-  "/get-all-products-shop/:id",
+  "/get-all-products",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const products = await Product.find({ shopId: req.params.id });
+      const { location } = req.query; // Get location from query params
+
+      let products;
+      if (location && location !== "All Locations") {
+        products = await Product.find({ sellerLocation: location }).sort({
+          createdAt: -1,
+        });
+      } else {
+        products = await Product.find().sort({ createdAt: -1 });
+      }
 
       res.status(201).json({
         success: true,
@@ -72,7 +81,6 @@ router.get(
     }
   })
 );
-
 // delete product of a shop
 router.delete(
   "/delete-shop-product/:id",
