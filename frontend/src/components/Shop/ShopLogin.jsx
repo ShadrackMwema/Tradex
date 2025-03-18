@@ -1,6 +1,5 @@
-import { React, useEffect, useState } from "react";
+import { React, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import styles from "../../styles/styles";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { server } from "../../server";
@@ -11,27 +10,28 @@ const ShopLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false); // Loader state
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Start loading
 
-    await axios
-      .post(
+    try {
+      const res = await axios.post(
         `${server}/shop/login-shop`,
-        {
-          email,
-          password,
-        },
+        { email, password },
         { withCredentials: true }
-      )
-      .then((res) => {
-        toast.success("Login Success!");
-        navigate("/dashboard");
-        window.location.reload(true); 
-      })
-      .catch((err) => {
-        toast.error(err.response.data.message);
-      });
+      );
+
+      toast.success("Login Success!");
+      console.log(res.data);
+      navigate("/dashboard");
+      
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Login failed!");
+    } finally {
+      setLoading(false); // Stop loading
+    }
   };
 
   return (
@@ -45,40 +45,28 @@ const ShopLogin = () => {
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label className="block text-sm font-medium text-gray-700">
                 Email address
               </label>
-              <div className="mt-1">
-                <input
-                  type="email"
-                  name="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                />
-              </div>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              />
             </div>
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label className="block text-sm font-medium text-gray-700">
                 Password
               </label>
               <div className="mt-1 relative">
                 <input
                   type={visible ? "text" : "password"}
-                  name="password"
-                  autoComplete="current-password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
                 {visible ? (
                   <AiOutlineEye
@@ -95,40 +83,38 @@ const ShopLogin = () => {
                 )}
               </div>
             </div>
-            <div className={`${styles.noramlFlex} justify-between`}>
-              <div className={`${styles.noramlFlex}`}>
-                <input
-                  type="checkbox"
-                  name="remember-me"
-                  id="remember-me"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label
-                  htmlFor="remember-me"
-                  className="ml-2 block text-sm text-gray-900"
-                >
-                  Remember me
-                </label>
-              </div>
-              <div className="text-sm">
-                <a
-                  href=".forgot-password"
-                  className="font-medium text-blue-600 hover:text-blue-500"
-                >
-                  Forgot your password?
-                </a>
-              </div>
+            <div className="flex justify-between">
+              <label className="flex items-center">
+                <input type="checkbox" className="h-4 w-4 text-blue-600 border-gray-300 rounded" />
+                <span className="ml-2 text-sm text-gray-900">Remember me</span>
+              </label>
+              <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-500">
+                Forgot your password?
+              </Link>
             </div>
             <div>
               <button
                 type="submit"
-                className="group relative w-full h-[40px] flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                disabled={loading}
+                className={`w-full h-[40px] flex justify-center items-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 ${
+                  loading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
-                Submit
+                {loading ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                    </svg>
+                    Logging in...
+                  </span>
+                ) : (
+                  "Submit"
+                )}
               </button>
             </div>
-            <div className={`${styles.noramlFlex} w-full`}>
-              <h4>Not have any account?</h4>
+            <div className="flex justify-center">
+              <span>Not have an account?</span>
               <Link to="/shop-create" className="text-blue-600 pl-2">
                 Sign Up
               </Link>
