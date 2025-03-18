@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams,Link } from "react-router-dom";
 import { server } from "../server";
 
 const SellerActivationPage = () => {
@@ -39,7 +39,10 @@ const SellerActivationPage = () => {
       {error ? (
         <p>Your token is expired!</p>
       ) : (
+        <>
+        <Link to="/">Continue</Link>
         <p>Your account has been created suceessfully!</p>
+        </>
       )}
     </div>
   );
