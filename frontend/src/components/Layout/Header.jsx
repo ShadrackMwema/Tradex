@@ -244,17 +244,14 @@ const Header = ({ activeHeading }) => {
           {/* Search Bar */}
           <div className="w-full p-2">
             <div className="w-full relative">
-              <input
-                type="text"
-                placeholder="Search for Services or Products..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-                className="h-[35px] w-full px-2 border-[#3957db] border-[2px] rounded-md text-sm"
-              />
-              <AiOutlineSearch
-                size={20}
-                className="absolute right-2 top-2 cursor-pointer"
-              />
+            <input
+  type="text"
+  placeholder="Search for Services or Products..."
+  value={searchTerm}
+  onChange={handleSearchChange}
+  className="h-[35px] w-full px-2 border-green-500 border-[2px] rounded-md text-sm"
+/>
+
               {searchData && searchData.length !== 0 ? (
                 <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[50] p-4">
                   {searchData &&

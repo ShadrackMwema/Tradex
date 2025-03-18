@@ -113,11 +113,11 @@ const ProductCard = ({ data, isEvent }) => {
       <div className="mt-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h5 className="text-lg font-bold text-gray-900">
-            ${data.discountPrice || data.originalPrice}
+            Ksh {data.discountPrice || data.originalPrice}
           </h5>
           {data.originalPrice && (
             <h4 className="text-sm text-gray-500 line-through">
-              ${data.originalPrice}
+              Ksh {data.originalPrice}
             </h4>
           )}
         </div>

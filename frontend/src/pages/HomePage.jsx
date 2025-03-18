@@ -46,13 +46,14 @@ const HomePage = () => {
       <div className="mb-8">
         <Hero />
       </div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <LocationFilter
-          selectedLocation={selectedLocation}
-          onLocationChange={handleLocationChange}
-          locations={locations || ["All Locations"]}
-        />
-      </div>
+      <div className="flex justify-center items-center my-6">
+  <LocationFilter
+    selectedLocation={selectedLocation}
+    onLocationChange={handleLocationChange}
+    locations={locations || ["All Locations"]}
+  />
+</div>
+
       <Categories />
       {isLoading ? (
         <div className="text-center py-10">Loading products...</div>

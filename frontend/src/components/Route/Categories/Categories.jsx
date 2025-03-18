@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { brandingData, categoriesData } from "../../../static/data";
 import styles from "../../../styles/styles";
 
@@ -36,12 +36,9 @@ const Categories = () => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-bold">Shop by Category</h2>
           {!showAll && categoriesData.length > initialCategoriesToShow && (
-            <button
-              className="text-sm text-blue-600 hover:underline"
-              onClick={() => setShowAll(true)}
-            >
+            <Link to="/products" className="text-green-500 font-bold">
               See All
-            </button>
+            </Link>
           )}
         </div>
 
@@ -53,7 +50,7 @@ const Categories = () => {
             };
             return (
               <div
-                className="flex flex-col items-center justify-center p-2 border rounded-lg cursor-pointer hover:shadow-md transition-shadow min-w-[80px]"
+                className="flex flex-col items-center justify-center p-2 border border-green-500 rounded-lg cursor-pointer hover:shadow-md transition-shadow min-w-[80px]"
                 key={i.id}
                 onClick={() => handleSubmit(i)}
               >
@@ -76,7 +73,7 @@ const Categories = () => {
             };
             return (
               <div
-                className="flex flex-col items-center justify-center p-3 border rounded-lg cursor-pointer hover:shadow-md transition-shadow"
+                className="flex flex-col items-center justify-center p-3 border border-green-500 rounded-lg cursor-pointer hover:shadow-md transition-shadow"
                 key={i.id}
                 onClick={() => handleSubmit(i)}
               >
