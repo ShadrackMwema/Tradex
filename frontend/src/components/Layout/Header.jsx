@@ -93,14 +93,15 @@ const Header = ({ activeHeading }) => {
     <>
       <div className={styles.section}>
         <div className="hidden 800px:h-[50px] 800px:my-[20px] 800px:flex items-center justify-between">
-          <div>
-            <Link to="/">
-              <img
-                src="https://shopo.quomodothemes.website/assets/images/logo.svg"
-                alt=""
-              />
-            </Link>
-          </div>
+        <div>
+  <Link to="/">
+    <h1 className="text-2xl font-bold">
+      <span className="text-green-600">Trade</span>
+      <span className="text-black">EX</span>
+    </h1>
+  </Link>
+</div>
+
           {/* search box */}
           <div className="w-[50%] relative">
             <input
@@ -250,14 +251,15 @@ const Header = ({ activeHeading }) => {
               />
             </div>
             <div>
-              <Link to="/">
-                <img
-                  src="https://shopo.quomodothemes.website/assets/images/logo.svg"
-                  alt=""
-                  className="mt-2 cursor-pointer"
-                />
-              </Link>
-            </div>
+  <Link to="/">
+    <h1 className="text-2xl font-bold">
+      <span className="text-green-600">Trade</span>
+      <span className="text-black">EX</span>
+    </h1>
+  </Link>
+</div>
+
+
             <div className="flex items-center">
               {/* Wishlist icon */}
               <div
