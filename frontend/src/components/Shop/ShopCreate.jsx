@@ -3,7 +3,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { RxAvatar } from "react-icons/rx";
-
+import axios from "axios"
 const ShopCreate = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
