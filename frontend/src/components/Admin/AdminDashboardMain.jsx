@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllOrdersOfAdmin } from "../../redux/actions/order";
 import Loader from "../Layout/Loader";
 import { getAllSellers } from "../../redux/actions/sellers";
+import TransactionCard from "./Transactioncard";
 
 const AdminDashboardMain = () => {
   const dispatch = useDispatch();
@@ -150,6 +151,7 @@ const AdminDashboardMain = () => {
       </div>
       )
     }
+    <TransactionCard/>
    </>
   );
 };

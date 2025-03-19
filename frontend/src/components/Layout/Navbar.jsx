@@ -37,6 +37,7 @@ const Navbar = ({ active, setOpenWishlist }) => { // Add setOpenWishlist as a pr
           </span>
         </div>
       </div>
+      
     </div>
   );
 };

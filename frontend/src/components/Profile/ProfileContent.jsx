@@ -25,6 +25,7 @@ import axios from "axios";
 import { getAllOrdersOfUser } from "../../redux/actions/order";
 import SellerApplicationForm from "../Shop/verificationForm";
 import SellerApplicationStatus from "./status";
+import CoinPurchaseCard from "./coinPurchase";
 
 const ProfileContent = ({ active }) => {
   const { user, error, successMessage } = useSelector((state) => state.user);
@@ -81,7 +82,8 @@ const ProfileContent = ({ active }) => {
   return (
     <div className="w-full">
       {/* profile */}
-      <SellerApplicationStatus/>
+      <CoinPurchaseCard/>
+      <SellerApplicationStatus />
       {active === 1 && (
         <>
           <div className="flex justify-center w-full">
@@ -107,23 +109,35 @@ const ProfileContent = ({ active }) => {
           <br />
           <br />
           <div className="w-full px-5">
-            <form onSubmit={handleSubmit} aria-required={true}>
-              <div className="w-full 800px:flex block pb-3">
-                <div className=" w-[100%] 800px:w-[50%]">
-                  <label className="block pb-2">Full Name</label>
+            <form
+              onSubmit={handleSubmit}
+              aria-required={true}
+              className="bg-white p-6 rounded-lg shadow-lg max-w-2xl mx-auto"
+            >
+              <h2 className="text-xl font-semibold text-gray-700 text-center mb-4">
+                Update Profile
+              </h2>
+
+              <div className="w-full flex flex-col md:flex-row gap-4 pb-4">
+                <div className="w-full">
+                  <label className="block text-gray-600 text-sm font-medium mb-1">
+                    Full Name
+                  </label>
                   <input
                     type="text"
-                    className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+                    className="w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />
                 </div>
-                <div className=" w-[100%] 800px:w-[50%]">
-                  <label className="block pb-2">Email Address</label>
+                <div className="w-full">
+                  <label className="block text-gray-600 text-sm font-medium mb-1">
+                    Email Address
+                  </label>
                   <input
-                    type="text"
-                    className={`${styles.input} !w-[95%] mb-1 800px:mb-0`}
+                    type="email"
+                    className="w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -131,35 +145,39 @@ const ProfileContent = ({ active }) => {
                 </div>
               </div>
 
-              <div className="w-full 800px:flex block pb-3">
-                <div className=" w-[100%] 800px:w-[50%]">
-                  <label className="block pb-2">Phone Number</label>
+              <div className="w-full flex flex-col md:flex-row gap-4 pb-4">
+                <div className="w-full">
+                  <label className="block text-gray-600 text-sm font-medium mb-1">
+                    Phone Number
+                  </label>
                   <input
-                    type="number"
-                    className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+                    type="tel"
+                    className="w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none"
                     required
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                   />
                 </div>
-
-                <div className=" w-[100%] 800px:w-[50%]">
-                  <label className="block pb-2">Enter your password</label>
+                <div className="w-full">
+                  <label className="block text-gray-600 text-sm font-medium mb-1">
+                    Password
+                  </label>
                   <input
                     type="password"
-                    className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+                    className="w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
               </div>
-              <input
-                className={`w-[250px] h-[40px] border border-[#3a24db] text-center text-[#3a24db] rounded-[3px] mt-8 cursor-pointer`}
-                required
-                value="Update"
+
+              <button
                 type="submit"
-              />
+                className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-all duration-300"
+              >
+                Update
+              </button>
             </form>
           </div>
         </>

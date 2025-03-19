@@ -65,10 +65,10 @@ router.get(
 
       // Get all unique seller locations for the dropdown
       const allLocations = await Product.distinct("sellerLocation");
-      console.log("Raw locations from DB:", allLocations);
+      // console.log("Raw locations from DB:", allLocations);
       
       const validLocations = allLocations.filter(loc => loc !== null && loc !== undefined);
-      console.log("Valid locations after filtering:", validLocations);
+      // console.log("Valid locations after filtering:", validLocations);
       
       // Query products based on location filter
       let products;
@@ -80,12 +80,12 @@ router.get(
         products = await Product.find().sort({ createdAt: -1 });
       }
       
-      console.log("Number of products found:", products.length);
+      // console.log("Number of products found:", products.length);
       // Log a sample of sellerLocation values from the first few products
-      if (products.length > 0) {
-        console.log("Sample sellerLocation values:", 
-          products.slice(0, Math.min(5, products.length)).map(p => p.sellerLocation));
-      }
+      // if (products.length > 0) {
+      //   console.log("Sample sellerLocation values:", 
+      //     products.slice(0, Math.min(5, products.length)).map(p => p.sellerLocation));
+      // }
 
       res.status(200).json({
         success: true,

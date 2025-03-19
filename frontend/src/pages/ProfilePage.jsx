@@ -5,6 +5,7 @@ import Loader from "../components/Layout/Loader";
 import ProfileSideBar from "../components/Profile/ProfileSidebar";
 import ProfileContent from "../components/Profile/ProfileContent";
 import { useSelector } from "react-redux";
+import BottomTaskbar from "../components/Layout/BottomTaskbar";
 
 const ProfilePage = () => {
   const { loading } = useSelector((state) => state.user);
@@ -22,6 +23,7 @@ const ProfilePage = () => {
               <ProfileSideBar active={active} setActive={setActive} />
             </div>
             <ProfileContent active={active} />
+            <BottomTaskbar/>
           </div>
         </>
       )}

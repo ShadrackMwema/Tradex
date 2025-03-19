@@ -1,5 +1,7 @@
 const express = require("express");
 const User = require("../model/user");
+const Product = require("../model/product"); // You'll need to create this model
+const Transaction = require("../model/Transaction"); // You'll need to create this model
 const router = express.Router();
 const cloudinary = require("cloudinary");
 const ErrorHandler = require("../utils/ErrorHandler");
@@ -23,7 +25,6 @@ router.post("/create-user", async (req, res, next) => {
 
     console.log("Attempting to upload to Cloudinary");
     const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-      
       folder: "avatars",
     });
     console.log("Cloudinary upload successful");
@@ -32,6 +33,7 @@ router.post("/create-user", async (req, res, next) => {
       name: name,
       email: email,
       password: password,
+      coins: 50, // Starting with 50 coins for new users
       avatar: {
         public_id: myCloud.public_id,
         url: myCloud.secure_url,
@@ -88,7 +90,7 @@ router.post(
       if (!newUser) {
         return next(new ErrorHandler("Invalid token", 400));
       }
-      const { name, email, password, avatar } = newUser;
+      const { name, email, password, avatar, coins } = newUser;
 
       let user = await User.findOne({ email });
 
@@ -100,6 +102,7 @@ router.post(
         email,
         avatar,
         password,
+        coins: coins || 50, // Ensure coins are set, default to 50
       });
 
       sendToken(user, 201, res);
@@ -162,7 +165,24 @@ router.get(
     }
   })
 );
-
+router.get(
+  "/getuser/:userId",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.params.userId); // Use req.params.userId
+      if (!user) {
+        return next(new ErrorHandler("User doesn't exists", 400));
+      }
+      res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
 // log out user
 router.get(
   "/logout",
@@ -357,7 +377,7 @@ router.put(
   })
 );
 
-// find user infoormation with the userId
+// find user information with the userId
 router.get(
   "/user-info/:id",
   catchAsyncErrors(async (req, res, next) => {
@@ -418,6 +438,199 @@ router.delete(
       res.status(201).json({
         success: true,
         message: "User deleted successfully!",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// NEW ROUTES FOR COIN SYSTEM
+
+// Get user's coin balance
+router.get(
+  "/get-coin-balance",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user.id);
+      
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+      
+      res.status(200).json({
+        success: true,
+        coins: user.coins
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// Purchase coins (add coins to user's account)
+router.post(
+  "/purchase-coins",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { packageType, paymentDetails } = req.body;
+      const user = await User.findById(req.user.id);
+      
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+      
+      // Coin package options
+      const coinPackages = {
+        small: { coins: 100, price: 5 },
+        medium: { coins: 300, price: 12 },
+        large: { coins: 500, price: 18 }
+      };
+      
+      // Validate package type
+      if (!coinPackages[packageType]) {
+        return next(new ErrorHandler("Invalid package type", 400));
+      }
+      
+      // Process payment (integrate with your payment gateway)
+      // This is a placeholder - you'll need to implement the actual payment processing
+      
+      // After successful payment, add coins to user's account
+      user.coins += coinPackages[packageType].coins;
+      await user.save();
+      
+      res.status(200).json({
+        success: true,
+        message: `${coinPackages[packageType].coins} coins added to your account`,
+        newBalance: user.coins
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// View service provider full details (spend coins)
+router.post(
+  "/view-service-provider/:id",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const serviceProviderId = req.params.id;
+      const user = await User.findById(req.user.id);
+      
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+      
+      // Find the service provider
+      const serviceProvider = await Product.findById(serviceProviderId);
+      
+      if (!serviceProvider) {
+        return next(new ErrorHandler("Service provider not found", 404));
+      }
+      
+      // Check if user already purchased access to this service provider
+      const existingTransaction = await Transaction.findOne({
+        user: user._id,
+        serviceProvider: serviceProviderId
+      });
+      
+      if (existingTransaction) {
+        // User already has access
+        return res.status(200).json({
+          success: true,
+          serviceProvider,
+          alreadyPurchased: true
+        });
+      }
+      
+      // Check if user has enough coins
+      if (user.coins < serviceProvider.coinCost) {
+        return res.status(403).json({
+          success: false,
+          message: "Not enough coins",
+          required: serviceProvider.coinCost,
+          available: user.coins
+        });
+      }
+      
+      // Deduct coins and create transaction
+      user.coins -= serviceProvider.coinCost;
+      
+      // Create transaction record
+      const transaction = await Transaction.create({
+        user: user._id,
+        serviceProvider: serviceProviderId,
+        coinsSpent: serviceProvider.coinCost,
+        timestamp: Date.now()
+      });
+      
+      // Update user transaction history if your schema has that field
+      if (!user.transactions) {
+        user.transactions = [];
+      }
+      user.transactions.push(transaction._id);
+      
+      await user.save();
+      
+      res.status(200).json({
+        success: true,
+        serviceProvider,
+        newCoinsBalance: user.coins,
+        message: `${serviceProvider.coinCost} coins spent to view details`
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// Get user's transaction history
+router.get(
+  "/transaction-history",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      // Find all transactions for this user with populated service provider details
+      const transactions = await Transaction.find({ user: req.user.id })
+        .populate("serviceProvider", "name description coinCost")
+        .sort({ timestamp: -1 });
+      
+      res.status(200).json({
+        success: true,
+        transactions
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// Award bonus coins (admin only)
+router.post(
+  "/award-coins/:userId",
+  isAuthenticated,
+  isAdmin("Admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { amount, reason } = req.body;
+      const user = await User.findById(req.params.userId);
+      
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+      
+      // Add coins to user's balance
+      user.coins += parseInt(amount);
+      await user.save();
+      
+      res.status(200).json({
+        success: true,
+        message: `${amount} coins awarded to ${user.name}`,
+        reason
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));

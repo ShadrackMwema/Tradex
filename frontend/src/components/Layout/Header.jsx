@@ -16,7 +16,10 @@ import { useSelector } from "react-redux";
 import Cart from "../cart/Cart";
 import Wishlist from "../Wishlist/Wishlist";
 import { RxCross1 } from "react-icons/rx";
-
+import { IconButton } from "@material-ui/core";
+import axios from "axios";
+import { server } from "../../server";
+import { FaCoins } from "react-icons/fa";
 const Header = ({ activeHeading }) => {
   const { isAuthenticated, user } = useSelector((state) => state.user);
   const { isSeller } = useSelector((state) => state.seller);
@@ -30,6 +33,9 @@ const Header = ({ activeHeading }) => {
   const [openCart, setOpenCart] = useState(false);
   const [openWishlist, setOpenWishlist] = useState(false);
   const [open, setOpen] = useState(false);
+  const [coins, setCoins] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const handleSearchChange = (e) => {
     const term = e.target.value;
@@ -55,6 +61,33 @@ const Header = ({ activeHeading }) => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchCoins = async () => {
+      try {
+        const response = await axios.get(`${server}/user/getuser/${user._id}`, {
+          withCredentials: true,
+        });
+        console.log(response.data.user);
+        if (response.data.user && response.data.user.coins !== undefined) {
+          setCoins(response.data.user.coins);
+          console.log(response.data.user.coins);
+        } else {
+          setError("No coin balance found.");
+        }
+      } catch (err) {
+        setError(
+          err.response?.data?.message || "Failed to fetch coin balance."
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCoins();
+  }, [user]);
 
   return (
     <>
@@ -124,9 +157,7 @@ const Header = ({ activeHeading }) => {
           <div onClick={() => setDropDown(!dropDown)}>
             <div className="relative h-[60px] mt-[10px] w-[270px] hidden 1000px:block">
               <BiMenuAltLeft size={30} className="absolute top-3 left-2" />
-              <button
-                className="h-[100%] w-full flex justify-between items-center pl-10 bg-white font-sans text-lg font-[500] select-none rounded-t-md"
-              >
+              <button className="h-[100%] w-full flex justify-between items-center pl-10 bg-white font-sans text-lg font-[500] select-none rounded-t-md">
                 All Categories
               </button>
               <IoIosArrowDown
@@ -179,7 +210,17 @@ const Header = ({ activeHeading }) => {
                   </Link>
                 )}
               </div>
+              {/* Display Coin Balance */}
+              <IconButton></IconButton>
             </div>
+              {isAuthenticated && (
+                <div className="text-white mr-[15px] flex items-center">
+                  <span className="mr-1">
+                    {coins !== undefined ? coins : "Loading..."}
+                  </span>
+                  <FaCoins size={16} color="#FFD700" /> {/* Coin icon */}
+                </div>
+              )}
 
             {/* cart popup */}
             {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
@@ -238,6 +279,14 @@ const Header = ({ activeHeading }) => {
                   {cart && cart.length}
                 </span>
               </div>
+              {isAuthenticated && (
+                <div className="text-white mr-[15px] flex items-center">
+                  <span className="mr-1 text-black text-[26px]">
+                    {coins !== undefined ? coins : "Loading..."}
+                  </span>
+                  <FaCoins size={16} color="#FFD700" /> {/* Coin icon */}
+                </div>
+              )}
             </div>
           </div>
 
@@ -286,9 +335,7 @@ const Header = ({ activeHeading }) => {
           <div className="fixed w-full bg-[#0000005f] z-[100] h-full top-0 left-0">
             <div className="fixed w-[70%] bg-[#fff] h-screen top-0 left-0 z-[100] overflow-y-scroll">
               <div className="w-full justify-between flex pr-3">
-                <div>
-                  {/* Removed wishlist icon from here */}
-                </div>
+                <div>{/* Removed wishlist icon from here */}</div>
                 <RxCross1
                   size={30}
                   className="ml-4 mt-5"
@@ -296,7 +343,10 @@ const Header = ({ activeHeading }) => {
                 />
               </div>
 
-              <Navbar active={activeHeading} setOpenWishlist={setOpenWishlist} />
+              <Navbar
+                active={activeHeading}
+                setOpenWishlist={setOpenWishlist}
+              />
               <div className={`${styles.button} ml-4 !rounded-[4px]`}>
                 <Link to="/shop-create">
                   <h1 className="text-[#fff] flex items-center">
