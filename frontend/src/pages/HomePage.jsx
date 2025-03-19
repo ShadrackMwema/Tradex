@@ -43,9 +43,9 @@ const HomePage = () => {
   return (
     <div>
       <Header activeHeading={1} />
-      <div className="mb-8">
-        <Hero />
-      </div>
+<div className="mb-8 mx-2">
+  <Hero />
+</div>
       <div className="flex justify-center items-center my-6">
   <LocationFilter
     selectedLocation={selectedLocation}
