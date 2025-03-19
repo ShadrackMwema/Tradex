@@ -56,6 +56,17 @@ const userSchema = new mongoose.Schema({
       required: false,
     },
  },
+ // In your User model, add:
+coins: {
+  type: Number,
+  default: 50, // Start new users with 50 coins
+},
+transactions: [
+  {
+    type: mongoose.Schema.ObjectId,
+    ref: "Transaction",
+  }
+],
  createdAt:{
   type: Date,
   default: Date.now(),

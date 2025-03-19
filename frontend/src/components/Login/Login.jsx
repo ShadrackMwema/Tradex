@@ -27,6 +27,7 @@ const Login = () => {
       .then((res) => {
         toast.success("Login Success!");
         navigate("/");
+        
         console.log(res.data.role)
         window.location.reload(true); 
       })

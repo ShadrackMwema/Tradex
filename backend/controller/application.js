@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require("multer");
 const cloudinary = require("cloudinary");
 const SellerApplication  = require("../model/application"); // Import the model
-
+const mongoose =require("mongoose")
 // Configure Multer
 const storage = multer.diskStorage({});
 const upload = multer({ storage });
@@ -62,18 +62,45 @@ if (req.files.additionalDoc) {
 
 // Get seller application status
 router.get("/application/:id", async (req, res) => {
-  try {
-    const application = await SellerApplication.findById(req.params.id);
-    if (!application) {
-      return res.status(404).json({ message: "Application not found" });
+    try {
+      const { id } = req.params;
+  
+      // Log the ID for debugging
+      // console.log("Fetching application with ID:", id);
+  
+      // Validate the ID
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid application ID" });
+      }
+  
+      const application = await SellerApplication.findById(id);
+      if (!application) {
+        return res.status(404).json({ message: "Application not found" });
+      }
+  
+      res.json(application);
+    } catch (error) {
+      console.error("Error fetching application:", error);
+      res.status(500).json({ message: "Failed to fetch application" });
     }
-    res.json(application);
+  });
+  // Get applications by userId
+router.get("/user-applications", async (req, res) => {
+  try {
+    const { userId } = req.query;
+    
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+    
+    const applications = await SellerApplication.find({ userId });
+    res.json(applications);
   } catch (error) {
-    console.error("Error fetching application:", error);
-    res.status(500).json({ message: "Failed to fetch application" });
+    console.error("Error fetching user applications:", error);
+    res.status(500).json({ message: "Failed to fetch user applications" });
   }
 });
-
+  
 // Admin Routes
 
 // Get all applications (filtered by status)
@@ -92,7 +119,7 @@ router.get("/seller-applications", async (req, res) => {
 });
 
 // Get specific application details
-router.get("/api/admin/seller-applications/:id", async (req, res) => {
+router.get("/seller-applications/:id", async (req, res) => {
   try {
     const application = await SellerApplication.findById(req.params.id);
     if (!application) {

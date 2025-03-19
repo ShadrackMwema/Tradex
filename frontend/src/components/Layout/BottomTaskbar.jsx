@@ -13,6 +13,7 @@ import {
   AiFillShopping,
   AiFillPlusCircle,
 } from "react-icons/ai";
+import { IconButton } from "@material-ui/core";
 
 const BottomTaskbar = () => {
   const location = useLocation();
@@ -32,7 +33,7 @@ const BottomTaskbar = () => {
       label: "Account",
     },
     {
-      path: "/messages",
+      path: "/inbox",
       icon: <AiOutlineMessage size={24} />,
       activeIcon: <AiFillMessage size={24} />,
       label: "Messages",
@@ -49,12 +50,7 @@ const BottomTaskbar = () => {
       activeIcon: <AiFillShopping size={24} />,
       label: "Products",
     },
-    {
-      path: "/add-product",
-      icon: <AiOutlinePlus size={24} />,
-      activeIcon: <AiFillPlusCircle size={24} />,
-      label: "Add",
-    },
+  
   ];
 
   return (
@@ -72,6 +68,7 @@ const BottomTaskbar = () => {
             <span className="text-xs">{route.label}</span>
           </Link>
         ))}
+
       </div>
     </div>
   );

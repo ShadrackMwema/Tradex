@@ -11,6 +11,7 @@ import BottomTaskbar from "../components/Layout/BottomTaskbar";
 import ProductList from "../components/Route/NearYou/ProductList";
 import LocationFilter from "../components/Layout/LocationFilter";
 import { getAllProducts } from "../redux/actions/product"; // Import the action
+import Chatbot from "../components/bot/chatbot";
 
 const HomePage = () => {
   const dispatch = useDispatch();
@@ -63,6 +64,7 @@ const HomePage = () => {
       <BestDeals />
       <Events />
       <FeaturedProduct />
+      <Chatbot/>
       <Footer />
       <BottomTaskbar />
     </div>

@@ -61,6 +61,7 @@ import { server } from "./server";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import SellerApplicationForm from "./components/Shop/verificationForm.jsx";
+import AdminSellerApplications from "./components/Admin/sellerStatus.jsx";
 
 const App = () => {
   const [stripeApikey, setStripeApiKey] = useState("");
@@ -275,6 +276,14 @@ const App = () => {
           element={
             <ProtectedAdminRoute>
               <AdminDashboardUsers />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route
+          path="/sellerStatus"
+          element={
+            <ProtectedAdminRoute>
+              <AdminSellerApplications />
             </ProtectedAdminRoute>
           }
         />

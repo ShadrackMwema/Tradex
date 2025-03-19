@@ -19,6 +19,9 @@ const productSchema = new mongoose.Schema({
   originalPrice: {
     type: Number,
   },
+  previewInfo: { type: String, required: true }, // Free preview info
+  fullInfo: { type: String, required: true }, 
+  coinCost: { type: Number, required: true },
   discountPrice: {
     type: Number,
     required: [true, "Please enter your product price!"],
@@ -61,6 +64,10 @@ const productSchema = new mongoose.Schema({
   ],
   ratings: {
     type: Number,
+  },
+  coinCost: {
+    type: Number,
+    required: [true, "Please enter coin cost"],
   },
   shopId: {
     type: String,
