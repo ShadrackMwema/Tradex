@@ -129,12 +129,10 @@ router.get("/my-transactions", isAuthenticated, async (req, res) => {
 
 router.post("/deduct-coins", isAuthenticated, async (req, res) => {
   try {
-    const { userId, coins } = req.body;
-
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const { coins } = req.body;
+    const user = await User.findById(req.user.id);
+    
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     if (user.coins < coins) {
       return res.status(400).json({ message: "Insufficient coins" });
@@ -143,10 +141,11 @@ router.post("/deduct-coins", isAuthenticated, async (req, res) => {
     user.coins -= coins;
     await user.save();
 
-    res.status(200).json({ success: true, message: "Coins deducted successfully" });
+    res.json({ success: true, updatedCoins: user.coins });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 module.exports = router;

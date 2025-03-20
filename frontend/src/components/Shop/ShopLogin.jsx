@@ -13,14 +13,7 @@ const ShopLogin = () => {
   const [loading, setLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(() => {
-    // Check if user is already authenticated
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsAuthenticated(true);
-      navigate("/dashboard");
-    }
-  }, []);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,11 +26,11 @@ const ShopLogin = () => {
         { withCredentials: true }
       );
 
-      const token = res.data.token;
-      localStorage.setItem("token", token); // Save token
+     
       setIsAuthenticated(true); // Update state
-
+      navigate("/dashboard");
       toast.success("Login Success!");
+      window.location.reload(true);
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed!");
     } finally {
@@ -47,10 +40,9 @@ const ShopLogin = () => {
 
   // Redirect when authentication state updates
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/dashboard");
-    }
-  }, [isAuthenticated, navigate]);
+
+    
+  }, [, navigate]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

@@ -19,7 +19,7 @@ const Hero = () => {
         <h1
           className={`text-[20px] leading-[1.2] 800px:text-[40px] text-white font-[600] capitalize text-center 800px:text-left animate-fadeIn`}
         >
-          Discover Services & Products
+          Discover Services & Products             Near  You
         </h1>
         <p className="pt-2 text-[12px] 800px:text-[16px] font-[Poppins] font-[400] text-white text-center 800px:text-left animate-fadeIn delay-100">
           From home repairs to tech gadgets, TradeX has it all.
