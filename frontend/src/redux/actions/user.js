@@ -22,6 +22,55 @@ export const loadUser = () => async (dispatch) => {
   }
 };
 
+export const deductUserCoins = (userId, coins) => async (dispatch) => {
+  try {
+    dispatch({
+      type: "updateUserCoinsRequest",
+    });
+
+    const { data } = await axios.post(
+      `${server}/coins/deduct-coins`,
+      { userId, coins },
+      { withCredentials: true }
+    );
+
+    dispatch({
+      type: "updateUserCoinsSuccess",
+      payload: {
+        coins: data.updatedCoins,
+        message: "Coins deducted successfully",
+      },
+    });
+  } catch (error) {
+    dispatch({
+      type: "updateUserCoinsFailed",
+      payload: error.response?.data?.message || "Failed to deduct coins",
+    });
+  }
+};
+
+// Get updated user info (including coins)
+export const refreshUserInfo = () => async (dispatch) => {
+  try {
+    dispatch({
+      type: "LoadUserRequest",
+    });
+
+    const { data } = await axios.get(`${server}/user/getuser`, {
+      withCredentials: true,
+    });
+
+    dispatch({
+      type: "LoadUserSuccess",
+      payload: data.user,
+    });
+  } catch (error) {
+    dispatch({
+      type: "LoadUserFail",
+      payload: error.response?.data?.message || "Failed to load user",
+    });
+  }
+};
 // load seller
 export const loadSeller = () => async (dispatch) => {
   try {

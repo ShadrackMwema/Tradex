@@ -10,186 +10,200 @@ import { BiMessageSquareDetail } from "react-icons/bi";
 import { HiOutlineReceiptRefund } from "react-icons/hi";
 
 const DashboardSideBar = ({ active }) => {
+  // Array of menu items for more maintainable code
+  const menuItems = [
+    {
+      id: 1,
+      title: "Dashboard",
+      icon: (color) => <RxDashboard size={22} color={color} />,
+      link: "/dashboard"
+    },
+    {
+      id: 2,
+      title: "All Orders",
+      icon: (color) => <FiShoppingBag size={22} color={color} />,
+      link: "/dashboard-orders"
+    },
+    {
+      id: 3,
+      title: "All Products",
+      icon: (color) => <FiPackage size={22} color={color} />,
+      link: "/dashboard-products"
+    },
+    {
+      id: 4,
+      title: "Create Product/Service",
+      icon: (color) => <AiOutlineFolderAdd size={22} color={color} />,
+      link: "/dashboard-create-product"
+    },
+    {
+      id: 5,
+      title: "All Events",
+      icon: (color) => <MdOutlineLocalOffer size={22} color={color} />,
+      link: "/dashboard-events"
+    },
+    {
+      id: 6,
+      title: "Create Event",
+      icon: (color) => <VscNewFile size={22} color={color} />,
+      link: "/dashboard-create-event"
+    },
+    {
+      id: 7,
+      title: "Withdraw Money",
+      icon: (color) => <CiMoneyBill size={22} color={color} />,
+      link: "/dashboard-withdraw-money"
+    },
+    {
+      id: 8,
+      title: "Shop Inbox",
+      icon: (color) => <BiMessageSquareDetail size={22} color={color} />,
+      link: "/dashboard-messages"
+    },
+    {
+      id: 9,
+      title: "Discount Codes",
+      icon: (color) => <AiOutlineGift size={22} color={color} />,
+      link: "/dashboard-coupouns"
+    },
+    {
+      id: 10,
+      title: "Refunds",
+      icon: (color) => <HiOutlineReceiptRefund size={22} color={color} />,
+      link: "/dashboard-refunds"
+    },
+    {
+      id: 11,
+      title: "Settings",
+      icon: (color) => <CiSettings size={22} color={color} />,
+      link: "/settings"
+    }
+  ];
+
+  // Group menu items by category
+  const mainMenuItems = menuItems.slice(0, 3);
+  const contentMenuItems = menuItems.slice(3, 7);
+  const financeMenuItems = menuItems.slice(7, 10);
+  const otherMenuItems = menuItems.slice(10);
+
   return (
-    <div className="w-full h-[90vh] bg-white shadow-sm overflow-y-scroll sticky top-0 left-0 z-10">
-      {/* single item */}
-      <div className="w-full flex items-center p-4">
-        <Link to="/dashboard" className="w-full flex items-center">
-          <RxDashboard
-            size={30}
-            color={`${active === 1 ? "crimson" : "#555"}`}
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 1 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            Dashboard
-          </h5>
-        </Link>
+    <div className="w-full h-[90vh] bg-white shadow-md rounded-lg overflow-y-auto sticky top-0 left-0 z-10 transition-all duration-300">
+      {/* Shop Logo/Brand Area */}
+      <div className="py-6 px-4 border-b border-gray-100">
+        <h2 className="text-xl font-bold text-gray-800 hidden 800px:block">Seller Dashboard</h2>
+        <div className="flex items-center justify-center 800px:hidden">
+          <span className="text-lg font-bold text-gray-800">SD</span>
+        </div>
       </div>
 
-      <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-orders" className="w-full flex items-center">
-          <FiShoppingBag
-            size={30}
-            color={`${active === 2 ? "crimson" : "#555"}`}
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 2 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            All Orders
-          </h5>
-        </Link>
-      </div>
+      <div className="p-2">
+        {/* Main Navigation */}
+        <div className="mb-4">
+          <p className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden 800px:block">Main</p>
+          <nav>
+            {mainMenuItems.map((item) => (
+              <Link to={item.link} key={item.id}>
+                <div 
+                  className={`flex items-center px-4 py-3 mb-1 rounded-lg transition-all duration-200 ${
+                    active === item.id 
+                      ? "bg-red-50 text-red-600" 
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  {item.icon(active === item.id ? "#dc2626" : "#4b5563")}
+                  <span 
+                    className={`hidden 800px:block ml-3 font-medium ${
+                      active === item.id ? "text-red-600" : "text-gray-600"
+                    }`}
+                  >
+                    {item.title}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </nav>
+        </div>
 
-      <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-products" className="w-full flex items-center">
-          <FiPackage size={30} color={`${active === 3 ? "crimson" : "#555"}`} />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 3 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            All Products
-          </h5>
-        </Link>
-      </div>
+        {/* Content Management */}
+        <div className="mb-4">
+          <p className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden 800px:block">Content</p>
+          <nav>
+            {contentMenuItems.map((item) => (
+              <Link to={item.link} key={item.id}>
+                <div 
+                  className={`flex items-center px-4 py-3 mb-1 rounded-lg transition-all duration-200 ${
+                    active === item.id 
+                      ? "bg-red-50 text-red-600" 
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  {item.icon(active === item.id ? "#dc2626" : "#4b5563")}
+                  <span 
+                    className={`hidden 800px:block ml-3 font-medium ${
+                      active === item.id ? "text-red-600" : "text-gray-600"
+                    }`}
+                  >
+                    {item.title}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </nav>
+        </div>
 
-      <div className="w-full flex items-center p-4">
-        <Link
-          to="/dashboard-create-product"
-          className="w-full flex items-center"
-        >
-          <AiOutlineFolderAdd
-            size={30}
-            color={`${active === 4 ? "crimson" : "#555"}`}
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 4 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            Create Product
-          </h5>
-        </Link>
-      </div>
+        {/* Finance & Communications */}
+        <div className="mb-4">
+          <p className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden 800px:block">Finance & Communications</p>
+          <nav>
+            {financeMenuItems.map((item) => (
+              <Link to={item.link} key={item.id}>
+                <div 
+                  className={`flex items-center px-4 py-3 mb-1 rounded-lg transition-all duration-200 ${
+                    active === item.id 
+                      ? "bg-red-50 text-red-600" 
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  {item.icon(active === item.id ? "#dc2626" : "#4b5563")}
+                  <span 
+                    className={`hidden 800px:block ml-3 font-medium ${
+                      active === item.id ? "text-red-600" : "text-gray-600"
+                    }`}
+                  >
+                    {item.title}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </nav>
+        </div>
 
-      <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-events" className="w-full flex items-center">
-          <MdOutlineLocalOffer
-            size={30}
-            color={`${active === 5 ? "crimson" : "#555"}`}
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 5 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            All Events
-          </h5>
-        </Link>
-      </div>
-
-      <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-create-event" className="w-full flex items-center">
-          <VscNewFile
-            size={30}
-            color={`${active === 6 ? "crimson" : "#555"}`}
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 6 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            Create Event
-          </h5>
-        </Link>
-      </div>
-
-      <div className="w-full flex items-center p-4">
-        <Link
-          to="/dashboard-withdraw-money"
-          className="w-full flex items-center"
-        >
-          <CiMoneyBill
-            size={30}
-            color={`${active === 7 ? "crimson" : "#555"}`}
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 7 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            Withdraw Money
-          </h5>
-        </Link>
-      </div>
-
-      <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-messages" className="w-full flex items-center">
-          <BiMessageSquareDetail
-            size={30}
-            color={`${active === 8 ? "crimson" : "#555"}`}
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 8 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            Shop Inbox
-          </h5>
-        </Link>
-      </div>
-
-      <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-coupouns" className="w-full flex items-center">
-          <AiOutlineGift
-            size={30}
-            color={`${active === 9 ? "crimson" : "#555"}`}
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 9 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            Discount Codes
-          </h5>
-        </Link>
-      </div>
-
-      <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-refunds" className="w-full flex items-center">
-          <HiOutlineReceiptRefund
-            size={30}
-            color={`${active === 10 ? "crimson" : "#555"}`}
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 10 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            Refunds
-          </h5>
-        </Link>
-      </div>
-
-      <div className="w-full flex items-center p-4">
-        <Link to="/settings" className="w-full flex items-center">
-          <CiSettings
-            size={30}
-            color={`${active === 11 ? "crimson" : "#555"}`}
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 11 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            Settings
-          </h5>
-        </Link>
+        {/* Settings */}
+        <div>
+          <p className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden 800px:block">Other</p>
+          <nav>
+            {otherMenuItems.map((item) => (
+              <Link to={item.link} key={item.id}>
+                <div 
+                  className={`flex items-center px-4 py-3 mb-1 rounded-lg transition-all duration-200 ${
+                    active === item.id 
+                      ? "bg-red-50 text-red-600" 
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  {item.icon(active === item.id ? "#dc2626" : "#4b5563")}
+                  <span 
+                    className={`hidden 800px:block ml-3 font-medium ${
+                      active === item.id ? "text-red-600" : "text-gray-600"
+                    }`}
+                  >
+                    {item.title}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </nav>
+        </div>
       </div>
     </div>
   );

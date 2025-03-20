@@ -22,9 +22,7 @@ const CreateProduct = () => {
   const [stock, setStock] = useState();
 
   useEffect(() => {
-    if (error) {
-      toast.error(error);
-    }
+    if (error) toast.error(error);
     if (success) {
       toast.success("Product created successfully!");
       navigate("/dashboard");
@@ -34,12 +32,10 @@ const CreateProduct = () => {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-
     setImages([]);
 
     files.forEach((file) => {
       const reader = new FileReader();
-
       reader.onload = () => {
         if (reader.readyState === 2) {
           setImages((old) => [...old, reader.result]);
@@ -49,180 +45,153 @@ const CreateProduct = () => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+ // Add this before your handleSubmit function
+const validateForm = () => {
+  if (!name) return "Product name is required";
+  if (!description) return "Description is required";
+  if (!category || category === "Choose a category") return "Category is required";
+  if (!discountPrice) return "Discount price is required";
+  if (!stock) return "Stock is required";
+  if (images.length === 0) return "At least one image is required";
+  return null;
+};
 
-    const newForm = new FormData();
-
-    images.forEach((image) => {
-      newForm.set("images", image);
-    });
-    newForm.append("name", name);
-    newForm.append("description", description);
-    newForm.append("category", category);
-    newForm.append("tags", tags);
-    newForm.append("originalPrice", originalPrice);
-    newForm.append("discountPrice", discountPrice);
-    newForm.append("stock", stock);
-    newForm.append("shopId", seller._id);
-    dispatch(
-      createProduct({
-        name,
-        description,
-        category,
-        tags,
-        originalPrice,
-        discountPrice,
-        stock,
-        shopId: seller._id,
-        images,
-      })
-    );
-  };
-
+// Then modify your handleSubmit
+const handleSubmit = (e) => {
+  e.preventDefault();
+  
+  const validationError = validateForm();
+  if (validationError) {
+    toast.error(validationError);
+    return;
+  }
+  
+  // Log data being sent to help debug
+  console.log("Submitting product data:", {
+    name, description, category, tags,
+    originalPrice, discountPrice, stock,
+    shopId: seller._id, 
+    images: images.length // Just log the count for brevity
+  });
+  
+  dispatch(
+    createProduct({
+      name,
+      description,
+      category,
+      tags,
+      originalPrice: Number(originalPrice),
+      discountPrice: Number(discountPrice),
+      stock: Number(stock),
+      shopId: seller._id,
+      images,
+    })
+  );
+};
   return (
-    <div className="w-[90%] 800px:w-[50%] bg-white  shadow h-[80vh] rounded-[4px] p-3 overflow-y-scroll">
-      <h5 className="text-[30px] font-Poppins text-center">Create Product</h5>
-      {/* create product form */}
-      <form onSubmit={handleSubmit}>
-        <br />
+    <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-6 overflow-y-auto h-[80vh]">
+      <h2 className="text-2xl font-semibold text-center text-gray-700 mb-4">Create Product</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="pb-2">
-            Name <span className="text-red-500">*</span>
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Name *</label>
           <input
             type="text"
-            name="name"
             value={name}
-            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             onChange={(e) => setName(e.target.value)}
-            placeholder="Enter your product name..."
+            className="mt-1 block w-full border border-gray-300 p-2 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Product name"
           />
         </div>
-        <br />
+
         <div>
-          <label className="pb-2">
-            Description <span className="text-red-500">*</span>
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Description *</label>
           <textarea
-            cols="30"
-            required
-            rows="8"
-            type="text"
-            name="description"
+            rows="4"
             value={description}
-            className="mt-2 appearance-none block w-full pt-2 px-3 border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Enter your product description..."
+            className="mt-1 block w-full border border-gray-300 p-2 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Product description"
           ></textarea>
         </div>
-        <br />
+
         <div>
-          <label className="pb-2">
-            Category <span className="text-red-500">*</span>
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Category *</label>
           <select
-            className="w-full mt-2 border h-[35px] rounded-[5px]"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
+            className="mt-1 block w-full border border-gray-300 p-2 rounded-md focus:ring-blue-500 focus:border-blue-500"
           >
-            <option value="Choose a category">Choose a category</option>
-            {categoriesData &&
-              categoriesData.map((i) => (
-                <option value={i.title} key={i.title}>
-                  {i.title}
-                </option>
-              ))}
+            <option>Choose a category</option>
+            {categoriesData.map((item) => (
+              <option key={item.title} value={item.title}>{item.title}</option>
+            ))}
           </select>
         </div>
-        <br />
+
         <div>
-          <label className="pb-2">Tags</label>
+          <label className="block text-sm font-medium text-gray-700">Tags</label>
           <input
             type="text"
-            name="tags"
             value={tags}
-            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             onChange={(e) => setTags(e.target.value)}
-            placeholder="Enter your product tags..."
+            className="mt-1 block w-full border border-gray-300 p-2 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Product tags"
           />
         </div>
-        <br />
-        <div>
-          <label className="pb-2">Original Price</label>
-          <input
-            type="number"
-            name="price"
-            value={originalPrice}
-            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            onChange={(e) => setOriginalPrice(e.target.value)}
-            placeholder="Enter your product price..."
-          />
-        </div>
-        <br />
-        <div>
-          <label className="pb-2">
-            Price (With Discount) <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="number"
-            name="price"
-            value={discountPrice}
-            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            onChange={(e) => setDiscountPrice(e.target.value)}
-            placeholder="Enter your product price with discount..."
-          />
-        </div>
-        <br />
-        <div>
-          <label className="pb-2">
-            Product Stock <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="number"
-            name="price"
-            value={stock}
-            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            onChange={(e) => setStock(e.target.value)}
-            placeholder="Enter your product stock..."
-          />
-        </div>
-        <br />
-        <div>
-          <label className="pb-2">
-            Upload Images <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="file"
-            name=""
-            id="upload"
-            className="hidden"
-            multiple
-            onChange={handleImageChange}
-          />
-          <div className="w-full flex items-center flex-wrap">
-            <label htmlFor="upload">
-              <AiOutlinePlusCircle size={30} className="mt-3" color="#555" />
-            </label>
-            {images &&
-              images.map((i) => (
-                <img
-                  src={i}
-                  key={i}
-                  alt=""
-                  className="h-[120px] w-[120px] object-cover m-2"
-                />
-              ))}
-          </div>
-          <br />
+
+        <div className="grid grid-cols-2 gap-4">
           <div>
+            <label className="block text-sm font-medium text-gray-700">Original Price</label>
             <input
-              type="submit"
-              value="Create"
-              className="mt-2 cursor-pointer appearance-none text-center block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              type="number"
+              value={originalPrice}
+              onChange={(e) => setOriginalPrice(e.target.value)}
+              className="mt-1 block w-full border border-gray-300 p-2 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Original price"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Discount Price *</label>
+            <input
+              type="number"
+              value={discountPrice}
+              onChange={(e) => setDiscountPrice(e.target.value)}
+              className="mt-1 block w-full border border-gray-300 p-2 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Discount price"
             />
           </div>
         </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Stock *</label>
+          <input
+            type="number"
+            value={stock}
+            onChange={(e) => setStock(e.target.value)}
+            className="mt-1 block w-full border border-gray-300 p-2 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Stock count"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Upload Images *</label>
+          <input type="file" multiple className="hidden" onChange={handleImageChange} id="file-upload" />
+          <label htmlFor="file-upload" className="flex items-center gap-2 cursor-pointer text-blue-500">
+            <AiOutlinePlusCircle size={24} /> Upload Images
+          </label>
+          <div className="flex flex-wrap mt-2">
+            {images.map((src, index) => (
+              <img key={index} src={src} alt="preview" className="h-20 w-20 object-cover m-1 rounded-md" />
+            ))}
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
+        >
+          Create Product
+        </button>
       </form>
     </div>
   );

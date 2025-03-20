@@ -5,6 +5,8 @@
   "dependencies": {
     "@material-ui/core": "^4.12.4",
     "@material-ui/data-grid": "^4.0.0-alpha.37",
+    "@mui/material": "^6.4.8",
+    "@mui/x-data-grid": "^7.28.0",
     "@paypal/react-paypal-js": "^7.8.3",
     "@reduxjs/toolkit": "^1.9.3",
     "@stripe/react-stripe-js": "^1.7.0",

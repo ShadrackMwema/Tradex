@@ -1,7 +1,15 @@
+// userReducer.js
 import { createReducer } from "@reduxjs/toolkit";
 
 const initialState = {
   isAuthenticated: false,
+  user: null,
+  loading: false,
+  error: null,
+  successMessage: null,
+  addressloading: false,
+  usersLoading: false,
+  users: [],
 };
 
 export const userReducer = createReducer(initialState, {
@@ -64,14 +72,32 @@ export const userReducer = createReducer(initialState, {
   getAllUsersRequest: (state) => {
     state.usersLoading = true;
   },
-  getAllUsersSuccess: (state,action) => {
+  getAllUsersSuccess: (state, action) => {
     state.usersLoading = false;
     state.users = action.payload;
   },
-  getAllUsersFailed: (state,action) => {
+  getAllUsersFailed: (state, action) => {
     state.usersLoading = false;
     state.error = action.payload;
   },
+
+  // update user coins
+  updateUserCoinsRequest: (state) => {
+    state.loading = true;
+  },
+  updateUserCoinsSuccess: (state, action) => {
+    state.loading = false;
+    state.user = {
+      ...state.user,
+      coins: action.payload.coins
+    };
+    state.successMessage = action.payload.message;
+  },
+  updateUserCoinsFailed: (state, action) => {
+    state.loading = false;
+    state.error = action.payload;
+  },
+
   clearErrors: (state) => {
     state.error = null;
   },
