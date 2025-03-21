@@ -14,110 +14,111 @@ import {
 
 const Footer = () => {
   return (
-    <div className="bg-[#000] text-white">
+    <div className="bg-black text-white">
+      {/* Subscription Section */}
       <div className="md:flex md:justify-between md:items-center sm:px-12 px-4 bg-[#342ac8] py-7">
         <h1 className="lg:text-4xl text-3xl md:mb-0 mb-6 lg:leading-normal font-semibold md:w-2/5">
-          <span className="text-[#56d879]">Subscribe</span> us for get news{" "}
-          <br />
-          events and offers
+          <span className="text-[#56d879]">Subscribe</span> to get news, <br />
+          events, and offers
         </h1>
-        <div>
+        <div className="flex flex-col sm:flex-row sm:items-center w-full sm:w-auto">
           <input
-            type="text"
+            type="email"
             required
             placeholder="Enter your email..."
-            className="text-gray-800
-                sm:w-72 w-full sm:mr-5 mr-1 lg:mb-0 mb-4 py-2.5 rounded px-2 focus:outline-none"
+            className="text-gray-800 sm:w-72 w-full sm:mr-5 py-2.5 rounded-md px-4 focus:outline-none"
           />
-          <button className="bg-[#56d879] hover:bg-teal-500 duration-300 px-5 py-2.5 rounded-md text-whie md:w-auto w-full">
-            Submit
+          <button className="bg-[#56d879] hover:bg-teal-500 duration-300 px-5 py-2.5 rounded-md text-white md:w-auto w-full">
+            Subscribe
           </button>
         </div>
       </div>
-      {/* <div className="grid grid-cols-1 sm:gird-cols-3 lg:grid-cols-4 gap-6 sm:px-8 px-5 py-16 sm:text-center">
-        <ul className="px-5 text-center sm:text-start flex sm:block flex-col items-center">
+
+      {/* Footer Links Section */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:px-8 px-5 py-16 text-center sm:text-left">
+        <div>
           <img
-            src="https://shopo.quomodothemes.website/assets/images/logo.svg"
-            alt=""
-            style={{ filter: "brightness(0) invert(1)" }}
+            src="https://res.cloudinary.com/diljnt1m3/image/upload/v1742545713/X2_sefeti.png"
+            alt="Logo"
+            className="mx-auto sm:mx-0 brightness-0 invert w-32 sm:w-40 md:w-48 lg:w-56"
           />
-          <br />
-          <p>The home and elements needeed to create beatiful products.</p>
-          <div className="flex items-center mt-[15px]">
-            <AiFillFacebook size={25} className="cursor-pointer" />
+
+          <p className="mt-4 text-gray-400">
+            The home and elements needed to create beautiful products.
+          </p>
+          <div className="flex justify-center sm:justify-start mt-4 space-x-4">
+            <AiFillFacebook
+              size={25}
+              className="cursor-pointer hover:text-[#4267B2]"
+            />
             <AiOutlineTwitter
               size={25}
-              style={{ marginLeft: "15px", cursor: "pointer" }}
+              className="cursor-pointer hover:text-[#1DA1F2]"
             />
             <AiFillInstagram
               size={25}
-              style={{ marginLeft: "15px", cursor: "pointer" }}
+              className="cursor-pointer hover:text-[#E4405F]"
             />
             <AiFillYoutube
               size={25}
-              style={{ marginLeft: "15px", cursor: "pointer" }}
+              className="cursor-pointer hover:text-[#FF0000]"
             />
           </div>
-        </ul>
+        </div>
 
-        <ul className="text-center sm:text-start">
-          <h1 className="mb-1 font-semibold">Company</h1>
-          {footerProductLinks.map((link,index) => (
-            <li key={index}>
-              <Link
-                className="text-gray-400 hover:text-teal-400 duration-300
-                   text-sm cursor-pointer leading-6"
-                to={link.link}
-              >
-                {link.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <div>
+          <h1 className="text-lg font-semibold mb-3">Company</h1>
+          <ul>
+            {footercompanyLinks.map((link, index) => (
+              <li key={index} className="mb-2">
+                <Link
+                  to={link.link}
+                  className="text-gray-400 hover:text-teal-400 transition duration-300"
+                >
+                  {link.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-        <ul className="text-center sm:text-start">
-          <h1 className="mb-1 font-semibold">Shop</h1>
-          {footercompanyLinks.map((link,index) => (
-            <li key={index}>
-              <Link
-                className="text-gray-400 hover:text-teal-400 duration-300
-                   text-sm cursor-pointer leading-6"
-                to={link.link}
-              >
-                {link.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <div>
+          <h1 className="text-lg font-semibold mb-3">Shop</h1>
+          <ul>
+            {footerProductLinks.map((link, index) => (
+              <li key={index} className="mb-2">
+                <Link
+                  to={link.link}
+                  className="text-gray-400 hover:text-teal-400 transition duration-300"
+                >
+                  {link.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-        <ul className="text-center sm:text-start">
-          <h1 className="mb-1 font-semibold">Support</h1>
-          {footerSupportLinks.map((link,index) => (
-            <li key={index}>
-              <Link
-                className="text-gray-400 hover:text-teal-400 duration-300
-                   text-sm cursor-pointer leading-6"
-                to={link.link}
-              >
-                {link.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div> */}
+        <div>
+          <h1 className="text-lg font-semibold mb-3">Support</h1>
+          <ul>
+            {footerSupportLinks.map((link, index) => (
+              <li key={index} className="mb-2">
+                <Link
+                  to={link.link}
+                  className="text-gray-400 hover:text-teal-400 transition duration-300"
+                >
+                  {link.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
 
-      <div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10
-         text-center pt-2 text-gray-400 text-sm pb-8"
-      >
-        <span>© 2025 TradEX. All rights reserved.</span>
-        <span>Terms · Privacy Policy</span>
-        {/* <div className="sm:block flex items-center justify-center w-full">
-          <img
-            src="https://hamart-shop.vercel.app/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ffooter-payment.a37c49ac.png&w=640&q=75"
-            alt=""
-          />
-        </div> */}
+      {/* Footer Bottom Section */}
+      <div className="text-center text-gray-400 text-sm py-6 border-t border-gray-700">
+        <p>© 2025 TradEX. All rights reserved.</p>
+        <p className="mt-1">Terms · Privacy Policy</p>
       </div>
     </div>
   );

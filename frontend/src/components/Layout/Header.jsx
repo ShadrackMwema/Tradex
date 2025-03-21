@@ -92,13 +92,13 @@ const Header = ({ activeHeading }) => {
       <div className={`${styles.section} bg-white`}>
         <div className="hidden 800px:h-[70px] 800px:my-[10px] 800px:flex items-center justify-between">
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 bg-black">
             <Link to="/">
-              <img
-                src="frontend/src/Assests/animations/TradeEX Logo.png"
-                alt="TradeEX Logo"
-                className="h-12 object-contain"
-              />
+            <img
+            src="https://res.cloudinary.com/diljnt1m3/image/upload/w_200,h_200,c_limit,e_blur:400,o_90,b_black/l_text:arial_80:®,ar_1:1,c_lfill,o_60,co_rgb:ffffff,b_rgb:000000,r_max/v1742545713/X2_sefeti.png"
+            alt="Logo"
+            className="mx-auto sm:mx-0 brightness-0 text-black invert w-32 sm:w-40 md:w-48 lg:w-56"
+          />
             </Link>
           </div>
 
@@ -231,7 +231,7 @@ const Header = ({ activeHeading }) => {
 
             {/* Coin Balance */}
             {isAuthenticated && (
-              <div className="text-white flex items-center">
+              <div className="text-black flex items-center">
                 <CoinIndicator />
               </div>
             )}
