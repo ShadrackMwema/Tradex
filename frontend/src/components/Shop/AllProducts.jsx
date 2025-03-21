@@ -7,16 +7,26 @@ import { Link } from "react-router-dom";
 import { getAllProductsShop } from "../../redux/actions/product";
 import { deleteProduct } from "../../redux/actions/product";
 import Loader from "../Layout/Loader";
+import { toast } from "react-toastify";
 
 const AllProducts = () => {
-  const { products, isLoading } = useSelector((state) => state.products);
+  const { products, isLoading, error } = useSelector((state) => state.products);
   const { seller } = useSelector((state) => state.seller);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAllProductsShop(seller._id));
-  }, [dispatch]);
+    if (seller?._id) {
+      dispatch(getAllProductsShop(seller._id));
+    }
+  }, [dispatch, seller?._id]);
+
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching products:", error);
+      toast.error(error);
+    }
+  }, [error]);
 
   const handleDelete = (id) => {
     dispatch(deleteProduct(id));

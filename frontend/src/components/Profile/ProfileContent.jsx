@@ -92,14 +92,7 @@ const ProfileContent = ({ active }) => {
   return (
     <div className="w-full">
       {/* Common components for all sections */}
-      <div className="grid grid-cols-2 gap-4 p-4">
-        <div className="border rounded-lg p-4 shadow-sm">
-          <CoinPurchaseCard />
-        </div>
-        <div className="border rounded-lg p-4 shadow-sm">
-          <SellerApplicationStatus />
-        </div>
-      </div>
+
       {/* Profile Section */}
       {active === 1 && (
         <ProfileSection
@@ -151,99 +144,176 @@ const ProfileSection = ({
 }) => {
   return (
     <>
-      <div className="flex justify-center w-full mb-8">
-        <div className="relative">
-          <img
-            src={`${user?.avatar?.url}`}
-            className="w-[150px] h-[150px] rounded-full object-cover border-[3px] border-[#3ad132]"
-            alt="Profile"
-          />
-          <div className="w-[30px] h-[30px] bg-[#E3E9EE] rounded-full flex items-center justify-center cursor-pointer absolute bottom-[5px] right-[5px]">
-            <input
-              type="file"
-              id="image"
-              className="hidden"
-              onChange={handleImage}
-            />
-            <label htmlFor="image" className="cursor-pointer">
-              <AiOutlineCamera />
-            </label>
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex justify-center w-full mb-10">
+            <div className="relative group">
+              <div className="absolute inset-0 bg-blue-600 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+              <img
+                src={`${user?.avatar?.url}`}
+                className="w-40 h-40 rounded-full object-cover border-4 border-white shadow-lg"
+                alt="Profile"
+              />
+              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center cursor-pointer absolute bottom-1 right-1 shadow-md hover:shadow-lg transform hover:scale-110 transition-all duration-300">
+                <input
+                  type="file"
+                  id="image"
+                  className="hidden"
+                  onChange={handleImage}
+                />
+                <label htmlFor="image" className="cursor-pointer p-2">
+                  <AiOutlineCamera className="text-blue-600 text-lg" />
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div className="h-16 bg-blue-600"></div>
+
+            <div className="px-8 pt-6 pb-8">
+              <h2 className="text-2xl font-bold text-gray-800 text-center mb-8 flex items-center justify-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-blue-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+                Edit Your Profile
+              </h2>
+
+              <form onSubmit={handleSubmit} aria-required={true}>
+                <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div className="space-y-2">
+                    <label className="block text-gray-700 font-medium">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-gray-700 font-medium">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-gray-700 font-medium">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200"
+                      required
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-gray-700 font-medium">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Enter new password"
+                    />
+                    <div className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-3 w-3"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      Leave blank to keep current password
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4 mt-10">
+                  <button
+                    type="submit"
+                    className="w-full py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Save Changes
+                  </button>
+
+                  <button
+                    type="button"
+                    className="w-full py-3 bg-transparent text-gray-600 font-medium rounded-lg hover:bg-gray-100 border border-gray-300 transition-all duration-300 flex items-center justify-center gap-2"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
-
-      <div className="w-full px-5">
-        <form
-          onSubmit={handleSubmit}
-          aria-required={true}
-          className="bg-white p-6 rounded-lg shadow-lg max-w-2xl mx-auto"
-        >
-          <h2 className="text-xl font-semibold text-gray-700 text-center mb-6">
-            Update Profile
-          </h2>
-
-          <div className="w-full flex flex-col md:flex-row gap-4 mb-4">
-            <div className="w-full">
-              <label className="block text-gray-600 text-sm font-medium mb-2">
-                Full Name
-              </label>
-              <input
-                type="text"
-                className="w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-            <div className="w-full">
-              <label className="block text-gray-600 text-sm font-medium mb-2">
-                Email Address
-              </label>
-              <input
-                type="email"
-                className="w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="w-full flex flex-col md:flex-row gap-4 mb-6">
-            <div className="w-full">
-              <label className="block text-gray-600 text-sm font-medium mb-2">
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                className="w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none"
-                required
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-              />
-            </div>
-            <div className="w-full">
-              <label className="block text-gray-600 text-sm font-medium mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                className="w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter new password"
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-all duration-300"
-          >
-            Update Profile
-          </button>
-        </form>
+      <div className="grid grid-cols-2 gap-4 p-4">
+        <div className="border rounded-lg p-4 shadow-sm">
+          <CoinPurchaseCard />
+        </div>
+        <div className="border rounded-lg p-4 shadow-sm">
+          <SellerApplicationStatus />
+        </div>
       </div>
     </>
   );

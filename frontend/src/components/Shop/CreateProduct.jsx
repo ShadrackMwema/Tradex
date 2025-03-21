@@ -20,9 +20,13 @@ const CreateProduct = () => {
   const [originalPrice, setOriginalPrice] = useState();
   const [discountPrice, setDiscountPrice] = useState();
   const [stock, setStock] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (error) toast.error(error);
+    if (error) {
+      toast.error(error);
+      dispatch({ type: "clearErrors" });
+    }
     if (success) {
       toast.success("Product created successfully!");
       navigate("/dashboard");
@@ -30,70 +34,113 @@ const CreateProduct = () => {
     }
   }, [dispatch, error, success]);
 
-  const handleImageChange = (e) => {
+  const validateForm = () => {
+    if (!name) return "Product name is required";
+    if (!description) return "Description is required";
+    if (!category || category === "Choose a category")
+      return "Category is required";
+    if (!discountPrice || isNaN(discountPrice))
+      return "Discount price is required and must be a number";
+    if (!stock || isNaN(stock) || stock < 0)
+      return "Stock is required and must be a non-negative number";
+    if (images.length === 0) return "At least one image is required";
+    if (originalPrice && discountPrice >= originalPrice)
+      return "Discount price must be less than the original price";
+    return null;
+  };
+
+  const handleImageChange = async (e) => {
     const files = Array.from(e.target.files);
     setImages([]);
 
-    files.forEach((file) => {
+    for (const file of files) {
       const reader = new FileReader();
-      reader.onload = () => {
+      reader.onload = async () => {
         if (reader.readyState === 2) {
-          setImages((old) => [...old, reader.result]);
+          try {
+            const img = new Image();
+            img.src = reader.result;
+
+            img.onload = () => {
+              const canvas = document.createElement("canvas");
+              const ctx = canvas.getContext("2d");
+              canvas.width = 800;
+              canvas.height = (img.height / img.width) * 800;
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              const compressedImage = canvas.toDataURL("image/jpeg", 0.8);
+              setImages((old) => [...old, compressedImage]);
+            };
+
+            img.onerror = () => {
+              toast.error("Failed to load image. Please try again.");
+            };
+          } catch (err) {
+            console.error("Error compressing image:", err);
+            toast.error("Failed to process image. Please try again.");
+          }
         }
       };
       reader.readAsDataURL(file);
-    });
+    }
   };
 
- // Add this before your handleSubmit function
-const validateForm = () => {
-  if (!name) return "Product name is required";
-  if (!description) return "Description is required";
-  if (!category || category === "Choose a category") return "Category is required";
-  if (!discountPrice) return "Discount price is required";
-  if (!stock) return "Stock is required";
-  if (images.length === 0) return "At least one image is required";
-  return null;
-};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-// Then modify your handleSubmit
-const handleSubmit = (e) => {
-  e.preventDefault();
-  
-  const validationError = validateForm();
-  if (validationError) {
-    toast.error(validationError);
-    return;
-  }
-  
-  // Log data being sent to help debug
-  console.log("Submitting product data:", {
-    name, description, category, tags,
-    originalPrice, discountPrice, stock,
-    shopId: seller._id, 
-    images: images.length // Just log the count for brevity
-  });
-  
-  dispatch(
-    createProduct({
+    const validationError = validateForm();
+    if (validationError) {
+      toast.error(validationError);
+      setIsLoading(false);
+      return;
+    }
+
+    const discountPriceNumber = Number(discountPrice);
+    const stockNumber = Number(stock);
+
+    if (isNaN(discountPriceNumber) || isNaN(stockNumber)) {
+      toast.error("Invalid discount price or stock value.");
+      setIsLoading(false);
+      return;
+    }
+
+    const productData = {
       name,
       description,
       category,
       tags,
       originalPrice: Number(originalPrice),
-      discountPrice: Number(discountPrice),
-      stock: Number(stock),
+      discountPrice: discountPriceNumber,
+      stock: stockNumber,
       shopId: seller._id,
+      shop: seller,
+      sellerLocation: seller.address, // Ensure this field is included
+      previewInfo: description.substring(0, 100), // Required field
+      fullInfo: description, // Required field
       images,
-    })
-  );
-};
+    };
+
+    console.log("Product data being submitted:", productData); // Log the product data
+
+    try {
+      await dispatch(createProduct(productData));
+    } catch (error) {
+      toast.error("Failed to create product. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-6 overflow-y-auto h-[80vh]">
-      <h2 className="text-2xl font-semibold text-center text-gray-700 mb-4">Create Product</h2>
+      <h2 className="text-2xl font-semibold text-center text-gray-700 mb-4">
+        Create Product
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Name *</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Name *
+          </label>
           <input
             type="text"
             value={name}
@@ -104,7 +151,9 @@ const handleSubmit = (e) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Description *</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Description *
+          </label>
           <textarea
             rows="4"
             value={description}
@@ -115,7 +164,9 @@ const handleSubmit = (e) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Category *</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Category *
+          </label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
@@ -123,13 +174,17 @@ const handleSubmit = (e) => {
           >
             <option>Choose a category</option>
             {categoriesData.map((item) => (
-              <option key={item.title} value={item.title}>{item.title}</option>
+              <option key={item.title} value={item.title}>
+                {item.title}
+              </option>
             ))}
           </select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Tags</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Tags
+          </label>
           <input
             type="text"
             value={tags}
@@ -141,7 +196,9 @@ const handleSubmit = (e) => {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Original Price</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Original Price
+            </label>
             <input
               type="number"
               value={originalPrice}
@@ -151,7 +208,9 @@ const handleSubmit = (e) => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Discount Price *</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Discount Price *
+            </label>
             <input
               type="number"
               value={discountPrice}
@@ -163,7 +222,9 @@ const handleSubmit = (e) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Stock *</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Stock *
+          </label>
           <input
             type="number"
             value={stock}
@@ -174,23 +235,40 @@ const handleSubmit = (e) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Upload Images *</label>
-          <input type="file" multiple className="hidden" onChange={handleImageChange} id="file-upload" />
-          <label htmlFor="file-upload" className="flex items-center gap-2 cursor-pointer text-blue-500">
+          <label className="block text-sm font-medium text-gray-700">
+            Upload Images *
+          </label>
+          <input
+            type="file"
+            multiple
+            className="hidden"
+            onChange={handleImageChange}
+            id="file-upload"
+          />
+          <label
+            htmlFor="file-upload"
+            className="flex items-center gap-2 cursor-pointer text-blue-500"
+          >
             <AiOutlinePlusCircle size={24} /> Upload Images
           </label>
           <div className="flex flex-wrap mt-2">
             {images.map((src, index) => (
-              <img key={index} src={src} alt="preview" className="h-20 w-20 object-cover m-1 rounded-md" />
+              <img
+                key={index}
+                src={src}
+                alt="preview"
+                className="h-20 w-20 object-cover m-1 rounded-md"
+              />
             ))}
           </div>
         </div>
 
         <button
           type="submit"
+          disabled={isLoading}
           className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
         >
-          Create Product
+          {isLoading ? "Creating..." : "Create Product"}
         </button>
       </form>
     </div>

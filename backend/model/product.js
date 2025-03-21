@@ -19,9 +19,14 @@ const productSchema = new mongoose.Schema({
   originalPrice: {
     type: Number,
   },
-  previewInfo: { type: String, required: true }, // Free preview info
-  fullInfo: { type: String, required: true }, 
-  coinCost: { type: Number, required: true },
+  previewInfo: { 
+    type: String, 
+    required: [true, "Preview info is required"], // Add validation message
+  },
+  fullInfo: { 
+    type: String, 
+    required: [true, "Full info is required"], // Add validation message
+  },
   discountPrice: {
     type: Number,
     required: [true, "Please enter your product price!"],
@@ -34,11 +39,11 @@ const productSchema = new mongoose.Schema({
     {
       public_id: {
         type: String,
-        required: true,
+        required: [true, "Image public_id is required"],
       },
       url: {
         type: String,
-        required: true,
+        required: [true, "Image URL is required"],
       },
     },
   ],
@@ -65,21 +70,18 @@ const productSchema = new mongoose.Schema({
   ratings: {
     type: Number,
   },
-  coinCost: {
-    type: Number,
-    required: [true, "Please enter coin cost"],
-  },
+ 
   shopId: {
     type: String,
-    required: true,
+    required: [true, "Shop ID is required"],
   },
   shop: {
     type: Object,
-    required: true,
+    required: [true, "Shop details are required"],
   },
   sellerLocation: {
-    type: String, // Add this field
-    required: true,
+    type: String,
+    required: [true, "Seller location is required"], // Add validation message
   },
   sold_out: {
     type: Number,
