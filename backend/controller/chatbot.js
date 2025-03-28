@@ -12,10 +12,10 @@ if (!process.env.GEMINI_API_KEY) {
 // Initialize Gemini API
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Configure generation parameters - optimized for product/service descriptions
+// Configure generation parameters - optimized for service descriptions
 const getConfig = (configOverrides = {}) => {
   return {
-    temperature: configOverrides.temperature || 0.4, // Lower temperature for more consistent product info
+    temperature: configOverrides.temperature || 0.4, // Lower temperature for more consistent service info
     topK: configOverrides.topK || 40,
     topP: configOverrides.topP || 0.85,
     maxOutputTokens: configOverrides.maxOutputTokens || 1024,
@@ -34,36 +34,35 @@ const safetySettings = [
   }
 ];
 
-// Enhanced system prompt specifically for product/service promotion
+// Enhanced system prompt specifically for TradEX services
 const systemPrompt = 
-`You are the official AI assistant for our platform that promotes various services and products.
+`You are the official AI assistant for TradEX, a leading service provider platform.
 
 PLATFORM INFORMATION:
-- Our platform connects customers with high-quality products and services
-- We feature verified vendors and service providers
-- We emphasize quality, reliability, and customer satisfaction
+- TradEX connects customers with trusted service providers across various industries.
+- We specialize in home services, professional services, and business solutions.
+- Our platform ensures quality, reliability, and customer satisfaction.
 
 RESPONSE GUIDELINES:
-1. Be enthusiastic but professional when describing our offerings
-2. Keep responses concise (2-3 paragraphs maximum)
-3. Highlight benefits rather than just features
-4. Use persuasive but honest language
-5. Always suggest relevant products/services based on user queries
-6. Include a call-to-action in your responses when appropriate
-7. When describing specific products, mention: key features, benefits, and ideal use cases
-8. When describing services, mention: what problem it solves, who it's for, and expected outcomes
-9. If asked about pricing, provide general ranges if available but suggest contacting sales for exact quotes
-10. If you don't know specific product details, acknowledge this and offer to connect the user with a specialist
+1. Be professional and friendly when describing our services.
+2. Keep responses concise (2-3 paragraphs maximum).
+3. Highlight the benefits and outcomes of using TradEX services.
+4. Use persuasive but honest language.
+5. Always suggest relevant services based on user queries.
+6. Include a call-to-action in your responses when appropriate.
+7. When describing specific services, mention: what problem it solves, who it's for, and expected outcomes.
+8. If asked about pricing, provide general ranges if available but suggest contacting our support team for exact quotes.
+9. If you don't know specific service details, acknowledge this and offer to connect the user with a specialist.
 
 TONE:
-- Professional yet friendly
-- Confident but not pushy
-- Helpful and solution-oriented
+- Professional yet approachable.
+- Confident but not pushy.
+- Helpful and solution-oriented.
 
 TOPICS TO AVOID:
-- Competitor comparisons unless specifically asked
-- Guarantees about results or outcomes
-- Personal opinions about products
+- Competitor comparisons unless specifically asked.
+- Guarantees about results or outcomes.
+- Personal opinions about services.
 `;
 
 // Main chat endpoint
@@ -77,7 +76,7 @@ router.post("/chat", async (req, res) => {
     const { 
       message, 
       chatHistory = [], 
-      productContext = null, 
+      serviceContext = null, 
       configOverrides = {} 
     } = req.body;
 
@@ -93,9 +92,9 @@ router.post("/chat", async (req, res) => {
     // Build the context for the current request
     let currentPrompt = message;
     
-    // Add product-specific context if provided
-    if (productContext) {
-      currentPrompt = `[Context about ${productContext.name}]: ${productContext.description}\n\nUser inquiry: ${message}`;
+    // Add service-specific context if provided
+    if (serviceContext) {
+      currentPrompt = `[Context about ${serviceContext.name}]: ${serviceContext.description}\n\nUser inquiry: ${message}`;
     }
     
     // Add system prompt
@@ -110,7 +109,7 @@ router.post("/chat", async (req, res) => {
       });
       
       const responseText = result.response.text();
-      const enhancedResponse = addResponseEnhancements(responseText, productContext);
+      const enhancedResponse = addResponseEnhancements(responseText, serviceContext);
       
       return res.json({ 
         reply: enhancedResponse,
@@ -171,10 +170,10 @@ router.post("/chat", async (req, res) => {
       const responseText = result.response.text();
       
       // Post-process response if needed
-      const enhancedResponse = addResponseEnhancements(responseText, productContext);
+      const enhancedResponse = addResponseEnhancements(responseText, serviceContext);
       
       // Track analytics if needed
-      logInteraction(message, enhancedResponse, productContext?.name);
+      logInteraction(message, enhancedResponse, serviceContext?.name);
       
       res.json({ 
         reply: enhancedResponse,
@@ -214,14 +213,14 @@ router.post("/chat", async (req, res) => {
 // Fallback to simple request when chat fails
 async function handleSimpleRequest(req, res) {
   try {
-    const { message, productContext = null, configOverrides = {} } = req.body;
+    const { message, serviceContext = null, configOverrides = {} } = req.body;
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     
     let currentPrompt = message;
     
-    // Add product-specific context if provided
-    if (productContext) {
-      currentPrompt = `[Context about ${productContext.name}]: ${productContext.description}\n\nUser inquiry: ${message}`;
+    // Add service-specific context if provided
+    if (serviceContext) {
+      currentPrompt = `[Context about ${serviceContext.name}]: ${serviceContext.description}\n\nUser inquiry: ${message}`;
     }
     
     // Add system prompt
@@ -234,7 +233,7 @@ async function handleSimpleRequest(req, res) {
     });
     
     const responseText = result.response.text();
-    const enhancedResponse = addResponseEnhancements(responseText, productContext);
+    const enhancedResponse = addResponseEnhancements(responseText, serviceContext);
     
     return res.json({ 
       reply: enhancedResponse,
@@ -268,7 +267,7 @@ async function handleModelFallback(req, res, originalError) {
     
     // Create a simplified prompt
     const fallbackPrompt = 
-`You are a helpful assistant for a product and service platform.
+`You are a helpful assistant for TradEX, a service provider platform.
 Keep responses brief, friendly and focused on helping users.
 
 User message: ${message}`;
@@ -293,29 +292,31 @@ User message: ${message}`;
   }
 }
 
-// Helper function to enhance responses with business logic
-function addResponseEnhancements(text, productContext) {
+// Helper function to enhance responses with TradEX-specific logic
+function addResponseEnhancements(text, serviceContext) {
   // This is where you could add custom business logic
   // Like adding CTAs, tracking codes, or special formatting
   
   let enhanced = text;
   
   // Example enhancements:
-  if (productContext) {
-    enhanced += `\n\nWould you like to learn more about ${productContext.name} or see related offerings?`;
+  if (serviceContext) {
+    enhanced += `\n\nWould you like to learn more about ${serviceContext.name} or see related services on TradEX?`;
+  } else {
+    enhanced += `\n\nExplore more services on TradEX or contact our support team for personalized recommendations.`;
   }
   
   return enhanced;
 }
 
 // Analytics logging function
-function logInteraction(query, response, productName = null) {
+function logInteraction(query, response, serviceName = null) {
   // Here you would add your analytics tracking
   console.log("Chat interaction:", {
     timestamp: new Date().toISOString(),
     queryLength: query.length,
     responseLength: response.length,
-    product: productName,
+    service: serviceName,
     // You could send this to a database or analytics service
   });
 }

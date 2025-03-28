@@ -12,7 +12,6 @@ const Chatbot = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Auto-scroll to bottom of messages
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -21,23 +20,24 @@ const Chatbot = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Helper function to add emojis to bot responses based on content
   const enhanceWithEmojis = (text) => {
-    // Detect message type and add appropriate emojis
-    if (text.toLowerCase().includes('sorry') || text.toLowerCase().includes('error')) {
+    const lowerText = text.toLowerCase();
+    
+    if (lowerText.includes('sorry') || lowerText.includes('error')) {
       return `⚠️ ${text}`;
-    } else if (text.toLowerCase().includes('thank')) {
+    } else if (lowerText.includes('thank')) {
       return `🙏 ${text}`;
-    } else if (text.toLowerCase().includes('product') || text.toLowerCase().includes('service')) {
+    } else if (lowerText.includes('product') || lowerText.includes('service')) {
       return `🛍️ ${text}`;
-    } else if (text.toLowerCase().includes('price') || text.toLowerCase().includes('cost')) {
+    } else if (lowerText.includes('price') || lowerText.includes('cost')) {
       return `💰 ${text}`;
-    } else if (text.toLowerCase().includes('help') || text.toLowerCase().includes('assist')) {
+    } else if (lowerText.includes('help') || lowerText.includes('assist')) {
       return `🤝 ${text}`;
-    } else if (text.toLowerCase().includes('would you like to learn more')) {
+    } else if (lowerText.includes('learn more')) {
       return `${text} 📚`;
+    } else if (lowerText.includes('hello') || lowerText.includes('hi')) {
+      return `👋 ${text}`;
     } else {
-      // Default elegant decorator
       return `✨ ${text}`;
     }
   };
@@ -48,38 +48,36 @@ const Chatbot = () => {
     const userMessage = input;
     setInput('');
     
-    // Add user message to chat
-    const updatedMessages = [...messages, { text: userMessage, sender: 'user' }];
-    setMessages(updatedMessages);
+    setMessages(prev => [...prev, { text: userMessage, sender: 'user' }]);
     setIsLoading(true);
-    
+
     try {
-      // Format chat history for the API
-      const chatHistory = updatedMessages.map(msg => ({
+      const chatHistory = messages.map(msg => ({
         text: msg.text,
         sender: msg.sender === 'bot' ? 'model' : 'user'
       }));
       
-      // Send chat history for context
       const response = await axios.post(`${server}/bot/chat`, { 
         message: userMessage,
         chatHistory: chatHistory
       });
-      
-      // Add styled bot response
-      setMessages(prev => [...prev, { 
-        text: enhanceWithEmojis(response.data.reply), 
-        sender: 'bot' 
-      }]);
+
+      // Simulating typing delay before showing bot response
+      setTimeout(() => {
+        setMessages(prev => [...prev, { 
+          text: enhanceWithEmojis(response.data.reply), 
+          sender: 'bot' 
+        }]);
+        setIsLoading(false);
+      }, 1000); // 1 second delay for realism
     } catch (error) {
       console.error('Error sending message:', error);
       setMessages(prev => [...prev, { 
-        text: '⚠️ I apologize for the inconvenience. Our systems are experiencing a temporary issue. Please try again in a moment.',
+        text: '⚠️ Oops! There was an issue. Please try again later.',
         sender: 'bot' 
       }]);
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   return (
@@ -96,7 +94,7 @@ const Chatbot = () => {
       {isOpen && (
         <div className="chatbot-container">
           <div className="chatbot-header">
-            <h3>✨ Product Assistant ✨</h3>
+            <h3>✨ My Assistant ✨</h3>
           </div>
           
           <div className="chatbot-messages">
